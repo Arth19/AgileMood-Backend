@@ -1,11 +1,10 @@
 from sqlalchemy.orm import Session
 
 from app.models.emotion_record_model import EmotionRecord
-
 from app.schemas.emotion_record_schema import EmotionRecordCreate
-
 from app.data_structures import emotion_data_structure as emotions
-from .user_crud import get_user_by_id
+
+from app.utils.logger import logger
 
 
 def get_valid_emotions():
@@ -13,7 +12,7 @@ def get_valid_emotions():
 
 
 def create_emotion_record(db: Session, emotion_record: EmotionRecordCreate):
-    if not _valid_params(db, emotion_record):
+    if not _valid_params(emotion_record):
         return None
 
     db_emotion_record = EmotionRecord(
@@ -29,10 +28,17 @@ def create_emotion_record(db: Session, emotion_record: EmotionRecordCreate):
     return db_emotion_record
 
 
-def _valid_params(db: Session, emotion_record: EmotionRecordCreate) -> bool:
-    if get_user_by_id(db, emotion_record.user_id) is None:
-        return False
+def get_emotion_record_by_user_id(db: Session, user_id: int):
+    return db.query(EmotionRecord).filter(EmotionRecord.user_id == user_id).all()
+
+
+def _valid_params(emotion_record: EmotionRecordCreate) -> bool:
     if not emotions.is_valid_emotion(emotion_record.emotion):
+        logger.debug("Invalid emotion: %s", emotion_record.emotion)
+        return False
+
+    if not 0 < emotion_record.intensity > 5:
+        logger.debug("Invalid intensity: %s", emotion_record.intensity)
         return False
 
     return True

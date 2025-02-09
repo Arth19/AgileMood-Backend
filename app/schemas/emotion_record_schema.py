@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 
 class EmotionRecordCreate(BaseModel):
@@ -21,3 +21,6 @@ class EmotionRecordResponse(BaseModel):
     intensity: int
     notes: Optional[str] = None
 
+
+class AllEmotionReportsResponse(BaseModel):
+    reports: List[EmotionRecordResponse]

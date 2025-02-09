@@ -7,6 +7,8 @@ class Errors:
     EMAIL_ALREADY_EXISTS = HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Email already exists")
     INVALID_PARAMS = HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Invalid params")
 
+    REPORT_NOT_FOUND = HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Emotion report not found")
+
 
 class Messages:
     USER_DELETE = {"message": "Used deleted"}

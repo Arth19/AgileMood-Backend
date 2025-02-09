@@ -11,9 +11,13 @@ class Emotion:
 
 
 emotion_list: [Emotion] = [
-    Emotion("Happy"),
-    Emotion("Neutral"),
-    Emotion("Sad"),
+    Emotion("Feliz"),
+    Emotion("Neutro"),
+    Emotion("Triste"),
+    Emotion("Ansioso"),
+    Emotion("Frustrado"),
+    Emotion("Ansioso"),
+    Emotion("Motivado"),
 ]
 
 
