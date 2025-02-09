@@ -1,5 +1,5 @@
 import unittest
-import emotion_data_structure
+import emotion_data_structure as emotions
 
 
 class TestEmotion(unittest.TestCase):

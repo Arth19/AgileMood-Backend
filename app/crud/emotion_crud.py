@@ -13,7 +13,7 @@ def get_valid_emotions():
 
 
 def create_emotion_record(db: Session, emotion_record: EmotionRecordCreate):
-    if _validate_params(db, emotion_record):
+    if not _valid_params(db, emotion_record):
         return None
 
     db_emotion_record = EmotionRecord(
@@ -29,8 +29,10 @@ def create_emotion_record(db: Session, emotion_record: EmotionRecordCreate):
     return db_emotion_record
 
 
-def _validate_params(db: Session, emotion_record: EmotionRecordCreate) -> bool:
+def _valid_params(db: Session, emotion_record: EmotionRecordCreate) -> bool:
     if get_user_by_id(db, emotion_record.user_id) is None:
         return False
     if not emotions.is_valid_emotion(emotion_record.emotion):
         return False
+
+    return True
