@@ -1,13 +1,14 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-import crud.emotion_crud as emotion_crud
-import schemas.emotion_schema as emotion_schema
-import schemas.emotion_record_schema as emotion_record_schema
+from app.crud import emotion_crud
 
-from databases.sqlite_database import get_db
+import app.schemas.emotion_schema as emotion_schema
+import app.schemas.emotion_record_schema as emotion_record_schema
 
-from utils.constants import Errors, Messages
+from app.databases.sqlite_database import get_db
+
+from app.utils.constants import Errors
 
 router = APIRouter(
     prefix="/emotion",

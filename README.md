@@ -11,36 +11,39 @@ Certifique-se de ter os seguintes requisitos instalados antes de executar o proj
 
 ## 🚀 Instalação
 
-1. Clone este repositório:
+Clone este repositório:
 
    ```bash
-   git clone https://github.com/seu-usuario/seu-repositorio.git
-   cd seu-repositorio
+   git clone https://github.com/Jurupoc/MA-24.2-Backend.git
+   cd MA-24.2-Backend
    ```
 
-2. Crie um ambiente virtual (opcional, mas recomendado):
 
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # No Windows, use: venv\Scripts\activate
+## 🛠 Configurar o Ambiente Virtual
+Existem dois scripts disponíveis para facilitar a configuração e execução do projeto, dependendo do seu sistema operacional.
+
+1. 🚀 **Windows** (_setup.bat_ e _run.bat_): 
+No Windows, você pode usar so scripts **.bat** para configurar o ambiente virtual, instalar as dependências e rodar o servidor.
+Basta dar um duplo clique no arquivo _setup.bat_ e em seguida no _run.bat_ para iniciar tudo automaticamente. 
+    A API estará disponível em `http://127.0.0.1:8000`.
+
+
+2. 🚀 **Linux/macOS** (_setup.sh_ e _run.sh_): No Linux/macOS, você pode usar o script .sh. Para rodá-lo, siga os seguintes passos:  
+   1. **Dar permissão de execução ao script (Caso necessário):** 
+   ```bash 
+   chmod +x <nome_do_scrit>.sh
    ```
-
-3. Instale as dependências:
-
-   ```bash
-   pip install -r requirements.txt
+   2. **Executar o script de setup:**
+   ```bash 
+   ./setup.sh
    ```
-
-## ⚡ Executando a API
-
-Para iniciar o servidor, execute o seguinte comando:
-
-```bash
-fastapi dev main.py
-```
-
-A API estará disponível em `http://127.0.0.1:8000`.
-
+   3. **Executar o script que inicializa a API:**
+   ```bash 
+   ./run.sh
+   ```
+  
+    
+  
 ### 📜 Documentação Interativa
 
 Após iniciar a API, você pode acessar a documentação interativa gerada automaticamente pelo FastAPI:
@@ -63,12 +66,42 @@ Caso queira gerenciar o banco, você pode utilizar ferramentas como:
 ## 📂 Estrutura do Projeto
 
 ```
-📁 seu-repositorio/
-│── 📄 main.py             # Arquivo principal da API
-│── 📄 models.py           # Modelos do banco de dados
-│── 📄 routes.py           # Definição das rotas da API
-│── 📄 database.py         # Configuração da conexão SQLite
-│── 📄 requirements.txt    # Dependências do projeto
+📁 MA-24.2-Backend/
+│── app
+    │── 📁 crud
+         │── 📄 __init__.py
+         │── 📄 emotion_crud.py
+         │── 📄 user_crud.py
+    │── 📁 data_structures
+         │── 📄 __init__.py
+         │── 📄 emotion_data_structure.py
+         │── 📄 test_emotion_data_structure.py
+    │── 📁 databases # Configuração da conexão SQLite
+         │── 📄 __init__.py
+         │── 📄 sqlite_database.py 
+    │── 📁 models # Modelos do banco de dados
+         │── 📄 __init__.py
+         │── 📄 emotion_record_model.py
+         │── 📄 user_model.py
+    │── 📁 schemas # Objetos da API (response e request)
+         │── 📄 __init__.py
+         │── 📄 emotion_schema.py
+         │── 📄 emotion_record_schema.py
+         │── 📄 user_schema.py
+    │── 📁 routers # Definição das rotas da API
+         │── 📄 __init__.py
+         │── 📄 emotion_router.py
+         │── 📄 user_router.py
+    │── 📁 utils # Arquivos utilitarios
+         │── 📄 __init__.py
+         │── 📄 constants.py
+    │── 📄 main.py  # Arquivo principal da API
+    │── 📄 __init__.py
+│── 📄 requirements.txt # Dependências do projeto
+│── 📄 setup.bat        
+│── 📄 run.bat          
+│── 📄 setup.sh         
+│── 📄 run.sh           
 ```
 
 ## 🤝 Contribuição

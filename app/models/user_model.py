@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String
-import databases.sqlite_database as db
+import app.databases.sqlite_database as db
 
-from utils.constants import DataBase
+from app.utils.constants import DataBase
 
 
 class User(db.Base):

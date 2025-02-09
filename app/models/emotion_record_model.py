@@ -1,11 +1,9 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
-from sqlalchemy.orm import relationship
 
 import datetime
-import databases.sqlite_database as db
+import app.databases.sqlite_database as db
 
-from .user_model import User
-from utils.constants import DataBase
+from app.utils.constants import DataBase
 
 
 class EmotionRecord(db.Base):

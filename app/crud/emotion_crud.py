@@ -1,11 +1,10 @@
 from sqlalchemy.orm import Session
 
-from models.emotion_record_model import EmotionRecord
+from app.models.emotion_record_model import EmotionRecord
 
-from schemas.emotion_record_schema import EmotionRecordCreate
-from schemas.emotion_schema import EmotionsResponse
+from app.schemas.emotion_record_schema import EmotionRecordCreate
 
-from data_structures import emotions_data_structure as emotions
+from app.data_structures import emotion_data_structure as emotions
 from .user_crud import get_user_by_id
 
 

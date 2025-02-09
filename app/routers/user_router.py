@@ -1,12 +1,11 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-import crud.user_crud as user_crud
-import schemas.user_schema as user_schema
+import app.schemas.user_schema as user_schema
 
-from databases.sqlite_database import get_db
-
-from utils.constants import Errors, Messages
+from app.crud import user_crud
+from app.databases.sqlite_database import get_db
+from app.utils.constants import Errors, Messages
 
 router = APIRouter(
     prefix="/users",
