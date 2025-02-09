@@ -1,42 +1,22 @@
-from fastapi import FastAPI, Depends, HTTPException
-from sqlalchemy.orm import Session
+from fastapi import FastAPI
 
-import crud.user_crud as user_crud
-import models.user as user_models
-import schemas.user as user_schema
+import crud.emotion_crud as emotion_crud
+import models.user_model as user_models
+import schemas.emotion_schema as emotions_schema
 
-from databases.sqlite_data_provider import engine, get_db
+from databases.sqlite_database import engine
+from routers.user_router import router as user_router
+from routers.emotion_router import router as emotion_router
 
 user_models.db.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
+app.include_router(user_router)
+app.include_router(emotion_router)
 
-@app.get("/")
+
+@app.get("/ping", tags=["admin"])
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "pong"}
 
-
-@app.post("/users/", response_model=user_schema.UserResponse)
-def create_user(user: user_schema.UserCreate, db: Session = Depends(get_db)):
-    db_user = user_crud.get_user_by_email(db, email=user.email)
-    if db_user:
-        raise HTTPException(status_code=400, detail="Email já cadastrado")
-    return user_crud.create_user(db=db, user=user)
-
-
-@app.get("/users/{user_id}", response_model=user_schema.UserResponse)
-def read_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = user_crud.get_user(db, user_id=user_id)
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="Usuário não encontrado")
-    return db_user
-
-
-@app.delete("/users/{user_id}")
-def delete_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = user_crud.get_user(db, user_id=user_id)
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="Usuário não encontrado")
-    user_crud.delete_user(db=db, user_id=user_id)
-    return {"message": "Usuário deletado com sucesso"}

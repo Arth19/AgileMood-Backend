@@ -1,9 +1,11 @@
 from sqlalchemy import Column, Integer, String
-import databases.sqlite_data_provider as db
+import databases.sqlite_database as db
+
+from utils.constants import DataBase
 
 
 class User(db.Base):
-    __tablename__ = "users"
+    __tablename__ = DataBase.USER_TABLE_NAME
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
