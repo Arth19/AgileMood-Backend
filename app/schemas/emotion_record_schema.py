@@ -1,26 +1,17 @@
-from pydantic import BaseModel
-from datetime import datetime
-from typing import Optional, List
+from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
+
+import datetime
+import app.databases.sqlite_database as db
+
+from app.utils.constants import DataBase
 
 
-class EmotionRecordCreate(BaseModel):
-    user_id: int  # user identifier
-    emotion: str  # emotion
-    intensity: int  # intensity between 1 and 5
-    notes: Optional[str] = None  # Additional notes (optional)
-    timestamp: datetime = datetime.now()  # timestamp
+class EmotionRecord(db.Base):
+    __tablename__ = DataBase.EMOTION_RECORDS_TABLE_NAME
 
-    class Config:
-        from_attributes = True
-
-
-class EmotionRecordResponse(BaseModel):
-    id: int
-    user_id: int
-    emotion: str
-    intensity: int
-    notes: Optional[str] = None
-
-
-class AllEmotionReportsResponse(BaseModel):
-    reports: List[EmotionRecordResponse]
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    intensity = Column(String)
+    notes = Column(String)
+    emotion = Column(String)
+    timestamp = Column(DateTime, default=datetime.datetime.now)

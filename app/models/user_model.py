@@ -1,12 +1,16 @@
-from sqlalchemy import Column, Integer, String
-import app.databases.sqlite_database as db
-
-from app.utils.constants import DataBase
+from pydantic import BaseModel
 
 
-class User(db.Base):
-    __tablename__ = DataBase.USER_TABLE_NAME
+class User(BaseModel):
+    id: int | None = None
+    name: str
+    email: str
+    disabled: bool | None = None
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    email = Column(String, unique=True, nullable=False)
+
+class UserCreate(User):
+    password: str
+
+
+class UserInDB(User):
+    hashed_password: str
