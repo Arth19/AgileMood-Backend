@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from app.models.user_model import db
+from app.schemas.user_schema import db
 
 from app.databases.sqlite_database import engine
 from app.routers.user_router import router as user_router
