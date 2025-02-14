@@ -25,15 +25,3 @@ def get_emotion_records_by_user_id(db: Session, user_id: int):
 
 def get_emotion_records_by_user_id_and_emotion_id(db: Session, user_id: int, emotion_id: int):
     return db.query(EmotionRecord).filter(EmotionRecord.user_id == user_id, EmotionRecord.emotion_id == emotion_id).all()
-
-
-# def _valid_params(emotion_record: EmotionRecord) -> bool:
-#     if not emotions.is_valid_emotion(emotion_record.emotion):
-#         logger.debug("Invalid emotion: %s", emotion_record.emotion)
-#         return False
-
-#     if not 0 <= emotion_record.intensity <= 5:
-#         logger.debug("Invalid intensity: %s", emotion_record.intensity)
-#         return False
-
-#     return True
