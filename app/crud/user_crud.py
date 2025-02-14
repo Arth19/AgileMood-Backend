@@ -35,6 +35,7 @@ def _response_to_db_model(user: User) -> UserModel:
         email=user.email,
         disabled=False,
         hashed_password=get_password_hash(user.password),
+        role=user.role
     )
 
 
