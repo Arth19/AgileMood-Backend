@@ -19,11 +19,12 @@ class EmotionRecord(db.Base):
     __tablename__ = DataBase.EMOTION_RECORDS_TABLE_NAME
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("user.id"), nullable=False) 
+    user_id = Column(Integer, ForeignKey("user.id"), nullable=True) 
     emotion_id = Column(Integer, ForeignKey("emotion.id"), nullable=False)
     intensity = Column(Integer, nullable=False)
     notes = Column(String, nullable=True)
     timestamp = Column(DateTime, default=datetime.datetime.now)
+    is_anonymous = Column(Boolean, nullable=False, default=False)
 
     user = relationship("User", back_populates="emotion_records")
     emotion = relationship("Emotion")
