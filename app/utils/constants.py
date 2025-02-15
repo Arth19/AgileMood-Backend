@@ -25,6 +25,12 @@ class DataBase:
     EMOTION_RECORDS_TABLE_NAME = "emotion_records"
     EMOTION_TABLE_NAME = "emotion"
     USER_TABLE_NAME = "user"
+    TEAM_TABLE_NAME = "team"
+
+
+class Role:
+    MANAGER = "manager"
+    EMPLOYEE = "employee"
 
 
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"

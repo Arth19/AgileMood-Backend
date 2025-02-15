@@ -6,6 +6,7 @@ class Emotion(BaseModel):
     name: str
     emoji: str | None = None
     color: str | None = None
+    team_id: int | None = None
 
     class Config:
         from_attributes = True

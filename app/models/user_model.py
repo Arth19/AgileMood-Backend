@@ -15,3 +15,9 @@ class UserCreate(User):
 class UserInDB(User):
     id: int | None = None
     hashed_password: str
+
+
+class UserInTeam(BaseModel):
+    id: int
+    name: str
+    email: str

@@ -11,7 +11,7 @@ from app.models.user_model import UserInDB
 
 from app.databases.sqlite_database import get_db
 
-from app.utils.constants import Errors
+from app.utils.constants import Errors, Role
 from app.utils.logger import logger
 
 from app.routers.authentication import get_current_active_user
@@ -30,12 +30,12 @@ def create_emotion(
 ):
     logger.debug("call to create a new emotion")
 
-    if current_user.role == "manager":
-        response = emotion_crud.create_emotion(db, emotion)
-        if response is None:
-            raise Errors.INVALID_PARAMS
-    else:
+    if current_user.role != Role.MANAGER:
         raise Errors.NO_PERMISSION
+    
+    response = emotion_crud.create_emotion(db, emotion, current_user.id)
+    if response is None:
+        raise Errors.INVALID_PARAMS
 
     return response
 
@@ -48,13 +48,13 @@ def get_emotion_by_id(
 ):
     logger.debug("call to get an emotion by its id: %s", emotion_id)
 
-    if current_user.role == "manager":
-        response = emotion_crud.get_emotion_by_id(db, emotion_id)
-        if response is None:
-            logger.error(f"no emotion report found for this id: ", emotion_id)
-            raise Errors.REPORT_NOT_FOUND
-    else:
+    if current_user.role != Role.MANAGER:
         raise Errors.NO_PERMISSION
+    
+    response = emotion_crud.get_emotion_by_id(db, emotion_id, current_user.id)
+    if response is None:
+        logger.error(f"no emotion report found for this id: ", emotion_id)
+        raise Errors.REPORT_NOT_FOUND
     
     return {"reports": response}
 
@@ -66,38 +66,33 @@ def get_all_emotions(
 ):
     logger.debug("call to get all emotions")
 
-    if current_user.role == "manager":
-        response = emotion_crud.get_all_emotions(db)
-        if response is None:
-            logger.error(f"no emotions found in the database")
-            raise Errors.REPORT_NOT_FOUND
-    else:
+    if current_user.role != Role.MANAGER:
         raise Errors.NO_PERMISSION
+
+    response = emotion_crud.get_all_emotions(db, current_user.id)
+    if response is None:
+        logger.error(f"no emotions found in the database")
+        raise Errors.REPORT_NOT_FOUND
     
     return {"emotions": response}
 
 
-@router.put("/{emotion_name}", response_model=emotion_model.Emotion)
-def update_emotion_by_name(
-        emotion_name: str,
+@router.put("/{emotion_id}", response_model=emotion_model.Emotion)
+def update_emotion_by_id(
+        emotion_id: int,
         emotion_update: dict,
         current_user: Annotated[UserInDB, Depends(get_current_active_user)],
         db: Session = Depends(get_db),
 ):
-    logger.debug(f"Call to update emotion by name: {emotion_name}")
+    logger.debug(f"Call to update emotion by id: {emotion_id}")
 
-    if current_user.role == "manager":
-        db_emotion = emotion_crud.get_emotion_id_by_name(db, emotion_name)
-        if db_emotion is None:
-            logger.error(f"No emotion found with name: {emotion_name}")
-            raise Errors.REPORT_NOT_FOUND
-
-        updated_emotion = emotion_crud.update_emotion(db, db_emotion.id, emotion_update)
-        if updated_emotion is None:
-            logger.error(f"Failed to update emotion with name: {emotion_name}")
-            raise Errors.INVALID_PARAMS
-    else:
+    if current_user.role != Role.MANAGER:
         raise Errors.NO_PERMISSION
+
+    updated_emotion = emotion_crud.update_emotion(db, emotion_id, emotion_update, current_user.id)
+    if updated_emotion is None:
+        logger.error(f"Failed to update emotion with name: {emotion_id}")
+        raise Errors.INVALID_PARAMS
 
     return updated_emotion
 
@@ -110,10 +105,10 @@ def delete_emotion(
 ):
     logger.debug(f"Call to delete emotion by ID: {emotion_id}")
 
-    if current_user.role != "manager":
+    if current_user.role != Role.MANAGER:
         raise Errors.NO_PERMISSION
 
-    success = emotion_crud.delete_emotion(db, emotion_id)
+    success = emotion_crud.delete_emotion(db, emotion_id, current_user.id)
     if not success:
         raise Errors.REPORT_NOT_FOUND
 
