@@ -8,7 +8,7 @@ class Emotion(BaseModel):
     color: str | None = None
 
     class Config:
-        from_attributes = True  # Para compatibilidade com ORMs como SQLAlchemy
+        from_attributes = True
 
 
 class EmotionInDb(Emotion):

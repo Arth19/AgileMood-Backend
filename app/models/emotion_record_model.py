@@ -11,11 +11,10 @@ class IntensityEnum(int, Enum):
     FOUR = 4
     FIVE = 5
 
-# Modelo EmotionRecord
 class EmotionRecord(BaseModel):
     user_id: int
     emotion_id: int
-    intensity: IntensityEnum  # Intensidade entre 1 e 5
+    intensity: IntensityEnum
     notes: str | None = None
 
     class Config:
@@ -24,7 +23,7 @@ class EmotionRecord(BaseModel):
 
 class EmotionRecordInDb(EmotionRecord):
     id:  int | None = None
-    timestamp: datetime = Field(default_factory=datetime.now)  # Timestamp automático
+    timestamp: datetime = Field(default_factory=datetime.now)
 
 
 class AllEmotionReportsResponse(BaseModel):

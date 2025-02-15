@@ -21,6 +21,5 @@ class User(db.Base):
     hashed_password = Column(String, nullable=False)
     role = Column(String, nullable=False, default=RoleEnum.EMPLOYEE.value)
 
-    # Relacionamento com EmotionRecord
     emotion_records = relationship("EmotionRecord", back_populates="user")
     

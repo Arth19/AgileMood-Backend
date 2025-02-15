@@ -110,11 +110,9 @@ def delete_emotion(
 ):
     logger.debug(f"Call to delete emotion by ID: {emotion_id}")
 
-    # Verifica se o usuário tem permissão (apenas "manager" pode deletar)
     if current_user.role != "manager":
         raise Errors.NO_PERMISSION
 
-    # Tenta deletar a emoção
     success = emotion_crud.delete_emotion(db, emotion_id)
     if not success:
         raise Errors.REPORT_NOT_FOUND

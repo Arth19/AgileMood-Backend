@@ -5,7 +5,6 @@ from typing import Annotated
 from app.crud import emotion_record_crud
 from app.crud import emotion_crud
 
-import app.models.emotion_model as emotion_model
 import app.models.emotion_record_model as emotion_record_model
 
 from app.models.user_model import UserInDB
@@ -31,7 +30,6 @@ def create_emotion_record(
 ):
     logger.debug("call to create emotion record")
 
-    # Creating emotion Report
     emotion_record.user_id = current_user.id
     response = emotion_record_crud.create_emotion_record(db, emotion_record)
     if response is None:
