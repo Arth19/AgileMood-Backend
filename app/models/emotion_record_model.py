@@ -12,11 +12,12 @@ class IntensityEnum(int, Enum):
     FIVE = 5
 
 class EmotionRecord(BaseModel):
-    user_id: int
+    user_id: int | None = None
     emotion_id: int
     intensity: IntensityEnum
     notes: str | None = None
-
+    is_anonymous: bool | None = False
+    
     class Config:
         from_attributes = True
 
