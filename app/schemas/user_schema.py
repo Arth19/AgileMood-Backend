@@ -1,14 +1,8 @@
 from sqlalchemy import Column, Integer, String, Boolean
 import app.databases.sqlite_database as db
 from sqlalchemy.orm import relationship
-import enum
 
-from app.utils.constants import DataBase
-
-# Defina uma enumeração para os papéis (roles)
-class RoleEnum(str, enum.Enum):
-    MANAGER = "manager"
-    EMPLOYEE = "employee"
+from app.utils.constants import DataBase, Role
 
 
 class User(db.Base):
@@ -19,7 +13,10 @@ class User(db.Base):
     email = Column(String, unique=True, nullable=False)
     disabled = Column(Boolean, nullable=False, default=False)
     hashed_password = Column(String, nullable=False)
-    role = Column(String, nullable=False, default=RoleEnum.EMPLOYEE.value)
+    role = Column(String, nullable=False, default=Role.EMPLOYEE)
 
     emotion_records = relationship("EmotionRecord", back_populates="user")
-    
+
+    managed_teams = relationship("Team", back_populates="manager")
+
+    teams = relationship("Team", secondary="user_teams", back_populates="members")

@@ -13,6 +13,9 @@ class Emotion(db.Base):
     name = Column(String, nullable=False)
     emoji = Column(String, nullable=True)
     color = Column(String, nullable=True)
+    team_id = Column(Integer, ForeignKey("team.id"), nullable=False)
+
+    team = relationship("Team", back_populates="emotions")
     
 
 class EmotionRecord(db.Base):
