@@ -1,7 +1,6 @@
 from sqlalchemy import Column, Integer, String, Boolean
 import app.databases.sqlite_database as db
 from sqlalchemy.orm import relationship
-from app.schemas.team_schema import team_users
 import enum
 
 from app.utils.constants import DataBase
@@ -24,10 +23,4 @@ class User(db.Base):
 
     # Relacionamento com EmotionRecord
     emotion_records = relationship("EmotionRecord", back_populates="user")
-
-    # Relacionamento com Team (um-para-muitos, onde o usuário é gerente de um time)
-    managed_teams = relationship("Team", back_populates="manager")
-
-    # Relacionamento com Team (muitos-para-muitos)
-    teams = relationship("Team", secondary=team_users, back_populates="members")
     
