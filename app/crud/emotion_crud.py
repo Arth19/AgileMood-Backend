@@ -28,3 +28,33 @@ def get_emotion_id_by_name(db: Session, name: str):
 
 def get_all_emotions(db: Session):
     return db.query(Emotion).all()
+
+
+def update_emotion(db: Session, emotion_id: int, emotion_update: dict):
+    db_emotion = db.query(Emotion).filter(Emotion.id == emotion_id).first()
+    if db_emotion is None:
+        logger.error(f"Not able to find Emotion with this ID: {emotion_id}")
+        return None
+
+    for key, value in emotion_update.items():
+        if hasattr(db_emotion, key):
+            setattr(db_emotion, key, value)
+
+    db.commit()
+    db.refresh(db_emotion)
+
+    logger.debug(f"Emotion with ID {emotion_id} was updated successfully.")
+    return db_emotion
+
+
+def delete_emotion(db: Session, emotion_id: int):
+    db_emotion = db.query(Emotion).filter(Emotion.id == emotion_id).first()
+    if db_emotion is None:
+        logger.error(f"Not able to find Emotion with this ID: {emotion_id}")
+        return False
+
+    db.delete(db_emotion)
+    db.commit()
+
+    logger.debug(f"Emotion with ID {emotion_id} was deleted successfully.")
+    return True

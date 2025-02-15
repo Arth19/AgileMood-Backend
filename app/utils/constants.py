@@ -6,6 +6,7 @@ class Errors:
     USER_NOT_FOUND = HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="User not found")
     EMAIL_ALREADY_EXISTS = HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Email already exists")
     INVALID_PARAMS = HTTPException(status_code=HTTPStatus.UNPROCESSABLE_ENTITY, detail="Invalid params")
+    NO_PERMISSION = HTTPException(status_code=HTTPStatus.FORBIDDEN, detail="You have no permission to do that, contact your manager")
 
     INACTIVE_USER = HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Inactive user")
     INCORRECT_CREDENTIALS = HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Incorrect username or password")
