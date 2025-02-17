@@ -37,7 +37,17 @@ def get_all_teams(db: Session):
     """
     Return all created teams in the database
     """
-    return db.query(Team).all()
+
+    all_teams = db.query(Team).all()
+    result = []
+
+    for team in all_teams:
+        result.append({
+        "team_data": db.query(Team).filter(Team.id == team.id).first(),
+        "members": db.query(User).join(user_teams).filter(user_teams.c.team_id == team.id).all(),
+        })
+        
+    return result
 
 
 def update_team(db: Session, team_id: int, team_update: TeamModel):
@@ -45,6 +55,11 @@ def update_team(db: Session, team_id: int, team_update: TeamModel):
     Updates a existing team by it's ID
     """
     db_team = db.query(Team).filter(Team.id == team_id).first()
+    team_data = {
+    "team_data": db_team,
+    "members": db.query(User).join(user_teams).filter(user_teams.c.team_id == team_id).all(),
+    }
+    
     if db_team is None:
         logger.error(f"Team with ID {team_id} not found.")
         return None
@@ -56,7 +71,8 @@ def update_team(db: Session, team_id: int, team_update: TeamModel):
     db.commit()
     db.refresh(db_team)
     logger.debug(f"Team with ID {team_id} was updated successfully.")
-    return db_team
+    
+    return team_data
 
 
 def delete_team(db: Session, team_id: int):
