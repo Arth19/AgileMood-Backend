@@ -3,6 +3,7 @@ from datetime import datetime
 from app.models.user_model import UserInTeam
 from typing import List
 
+
 class Team(BaseModel):
     name: str
     manager_id: int | None = None
@@ -22,7 +23,6 @@ class TeamData(Team):
 class TeamResponse(BaseModel):
     team_data: TeamData
     members: List[UserInTeam]
-
 
 
 class AllTeamsResponse(BaseModel):

@@ -26,8 +26,10 @@ class EmotionRecord(db.Base):
     emotion_id = Column(Integer, ForeignKey("emotion.id"), nullable=False)
     intensity = Column(Integer, nullable=False)
     notes = Column(String, nullable=True)
-    timestamp = Column(DateTime, default=datetime.datetime.now)
+
     is_anonymous = Column(Boolean, nullable=False, default=False)
 
     user = relationship("User", back_populates="emotion_records")
     emotion = relationship("Emotion")
+
+    timestamp = Column(DateTime, default=datetime.datetime.now)

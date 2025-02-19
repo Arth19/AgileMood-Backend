@@ -1,10 +1,11 @@
 from sqlalchemy import delete, insert
 from sqlalchemy.orm import Session
+
 from app.schemas.team_schema import Team, user_teams
-from app.schemas.user_schema import User
 from app.crud.user_crud import get_user_by_id
 from app.models.team_model import Team as TeamModel
 from app.utils.logger import logger
+
 
 def create_team(db: Session, team: Team):
     """
@@ -22,15 +23,16 @@ def create_team(db: Session, team: Team):
 
 def get_team_by_id(db: Session, team_id: int):
     """
-    Returns a team by it's ID
+    Returns a team by ID
     """
 
-    teamData = {
-        "team_data": db.query(Team).filter(Team.id == team_id).first(),
-        "members": db.query(User).join(user_teams).filter(user_teams.c.team_id == team_id).all(),
+    team = db.query(Team).filter(Team.id == team_id).first()
+    team_data = {
+        "team_data": team,
+        "members": team.members,
         }
     
-    return teamData
+    return team_data
 
 
 def get_all_teams(db: Session):
@@ -52,7 +54,7 @@ def get_all_teams(db: Session):
 
 def update_team(db: Session, team_id: int, team_update: TeamModel):
     """
-    Updates a existing team by it's ID
+    Updates an existing team by ID
     """
     db_team = db.query(Team).filter(Team.id == team_id).first()
     team_data = {
@@ -77,7 +79,7 @@ def update_team(db: Session, team_id: int, team_update: TeamModel):
 
 def delete_team(db: Session, team_id: int):
     """
-    Deletes a team by it's ID
+    Deletes a team by ID
     """
     db_team = db.query(Team).filter(Team.id == team_id).first()
     if db_team is None:
@@ -86,20 +88,12 @@ def delete_team(db: Session, team_id: int):
 
     db.delete(db_team)
     db.commit()
-    logger.debug(f"Team with ID {team_id} was deleted sucessfully.")
+    logger.debug(f"Team with ID {team_id} was deleted successfully.")
     return True
 
 
 def add_team_member(db: Session, team_id: int, user_id: int):
-    db_team = db.query(Team).filter(Team.id == team_id).first()
-    db_user = get_user_by_id(db, user_id)
-    
-    if db_team is None:
-        logger.error(f"Team with ID {team_id} not found.")
-        return None
-
-    if db_user is None:
-        logger.error(f"User with ID {user_id} not found.")
+    if not _validate_team_and_user_existence(db, team_id, user_id):
         return None
 
     existing_user_team = db.query(user_teams).filter_by(user_id=user_id, team_id=team_id).first()
@@ -107,24 +101,14 @@ def add_team_member(db: Session, team_id: int, user_id: int):
         logger.error(f"User with ID {user_id} is already a member of the team that has ID {team_id}")
         return None
 
-    db.execute(
-        insert(user_teams).values(user_id=user_id, team_id=team_id)
-    )
+    db.execute(insert(user_teams).values(user_id=user_id, team_id=team_id))
     db.commit()
     
     return get_team_by_id(db, team_id)
 
 
 def remove_team_member(db: Session, team_id: int, user_id: int):
-    db_team = db.query(Team).filter(Team.id == team_id).first()
-    db_user = get_user_by_id(db, user_id)
-    
-    if db_team is None:
-        logger.error(f"Team with ID {team_id} not found.")
-        return None
-
-    if db_user is None:
-        logger.error(f"User with ID {user_id} not found.")
+    if not _validate_team_and_user_existence(db, team_id, user_id):
         return None
 
     existing_user_team = db.query(user_teams).filter_by(user_id=user_id, team_id=team_id).first()
@@ -133,7 +117,7 @@ def remove_team_member(db: Session, team_id: int, user_id: int):
         return None
 
     db.execute(
-        delete(user_teams).where(user_teams.c.user_id==user_id, user_teams.c.team_id==team_id)
+        delete(user_teams).where(user_teams.c.user_id == user_id, user_teams.c.team_id == team_id)
     )
     db.commit()
     
@@ -146,3 +130,17 @@ def is_manager_of_team(db: Session, user_id: int, team_id: int) -> bool:
     """
     team = db.query(Team).filter(Team.id == team_id).first()
     return team is not None and team.manager_id == user_id
+
+
+def _validate_team_and_user_existence(db: Session, team_id: int, user_id: int) -> bool:
+    db_team = db.query(Team).filter(Team.id == team_id).first()
+    if db_team is None:
+        logger.error(f"Team with ID {team_id} not found.")
+        return False
+
+    db_user = get_user_by_id(db, user_id)
+    if db_user is None:
+        logger.error(f"User with ID {user_id} not found.")
+        return False
+
+    return True

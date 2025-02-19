@@ -3,13 +3,14 @@ from datetime import datetime
 from typing import List
 from enum import Enum
 
-# Enumeração para intensidade (1 a 5)
+
 class IntensityEnum(int, Enum):
     ONE = 1
     TWO = 2
     THREE = 3
     FOUR = 4
     FIVE = 5
+
 
 class EmotionRecord(BaseModel):
     user_id: int | None = None
