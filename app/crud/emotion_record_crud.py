@@ -25,4 +25,5 @@ def get_emotion_records_by_user_id(db: Session, user_id: int):
 
 
 def get_emotion_records_by_user_id_and_emotion_id(db: Session, user_id: int, emotion_id: int):
-    return db.query(EmotionRecord).filter(EmotionRecord.user_id == user_id, EmotionRecord.emotion_id == emotion_id).all()
+    return db.query(EmotionRecord).filter(EmotionRecord.user_id == user_id,
+                                          EmotionRecord.emotion_id == emotion_id).all()

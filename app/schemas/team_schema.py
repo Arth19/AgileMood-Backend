@@ -14,7 +14,6 @@ user_teams = Table(
 )
 
 
-
 class Team(db.Base):
     __tablename__ = DataBase.TEAM_TABLE_NAME
 
