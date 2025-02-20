@@ -2,6 +2,7 @@ from sqlalchemy import delete, insert
 from sqlalchemy.orm import Session
 
 from app.schemas.team_schema import Team, user_teams
+from app.schemas.user_schema import User
 from app.crud.user_crud import get_user_by_id
 from app.models.team_model import Team as TeamModel
 from app.utils.logger import logger
