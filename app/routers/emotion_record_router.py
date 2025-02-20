@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends
+from sqlalchemy import text
 from sqlalchemy.orm import Session
-from typing import Annotated
+from typing import Annotated, List, Optional
+from datetime import date
 
 from app.crud import emotion_record_crud
 from app.crud import emotion_crud
