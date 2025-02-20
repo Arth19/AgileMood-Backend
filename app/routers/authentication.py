@@ -43,8 +43,6 @@ def authenticate_user(db: Session, email: str, password: str) -> UserInDB | bool
 
 
 async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Session = Depends(get_db)):
-    logger.debug("bom dia")
-
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("sub")
@@ -57,7 +55,6 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], db: Se
     user = user_crud.get_user_by_email(db, email=token_data.email)
     if user is None:
         raise Errors.CREDENTIALS_EXCEPTION
-    logger.debug("nao")
     return user
 
 
