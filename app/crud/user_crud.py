@@ -1,8 +1,10 @@
 from hashlib import sha256
 
 from sqlalchemy.orm import Session
+from sqlalchemy import select
 from app.schemas.user_schema import User as UserModel
 from app.models.user_model import User, UserInDB
+from app.schemas.team_schema import user_teams
 
 from app.utils.logger import logger
 
@@ -15,12 +17,38 @@ def get_user_by_email(db: Session, email: str) -> UserInDB | None:
     return db.query(UserModel).filter(UserModel.email == email).first()
 
 
+def get_user_team(db: Session, user_id: str):
+    
+    team_id = db.execute((select(user_teams.c.team_id).where(user_teams.c.user_id == user_id))).first()
+    
+    return team_id[0]
+
+
 def create_user(db: Session, user: User):
     db_user = _response_to_db_model(user)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+def update_user(db: Session, user_id: int, user_update: User):
+    user = db.query(UserModel).filter(UserModel.id == user_id).first()
+
+    if user is None:
+        logger.error(f"User with ID {user_id} not found.")
+        return None
+
+
+    for key, value in user_update.items():
+        if hasattr(user, key):
+            setattr(user, key, value)
+
+    db.commit()
+    db.refresh(user)
+
+    logger.debug(f"User with ID {user_id} updated successfully.")
+    return user
 
 
 def delete_user(db: Session, user_id: int):

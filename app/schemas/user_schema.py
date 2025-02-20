@@ -14,6 +14,7 @@ class User(db.Base):
     disabled = Column(Boolean, nullable=False, default=False)
     hashed_password = Column(String, nullable=False)
     role = Column(String, nullable=False, default=Role.EMPLOYEE)
+    avatar = Column(String, nullable=True)
 
     emotion_records = relationship("EmotionRecord", back_populates="user")
 
