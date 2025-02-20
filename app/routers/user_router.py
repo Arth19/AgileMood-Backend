@@ -52,7 +52,7 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
 
 
 @router.get("/")
-def read_user_by_email(email: str, db: Session = Depends(get_db)):
+def get_user_by_email(email: str, db: Session = Depends(get_db)):
     user = user_crud.get_user_by_email(db, email)
     if not user:
         raise Errors.USER_NOT_FOUND
