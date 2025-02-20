@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
-from app.routers.authentication import authenticate_user, create_access_token
+from app.routers.authentication import authenticate_user, create_access_token, get_current_active_user
 
 from app.models.user_model import UserCreate, UserInDB
 from app.models.token_model import Token
@@ -41,6 +41,11 @@ def create_user(user: UserCreate, db: Session = Depends(get_db)):
     if response is None:
         raise Errors.INVALID_PARAMS
     return response
+
+
+@router.get("/logged")
+def get_logged_user(current_user: Annotated[UserInDB, Depends(get_current_active_user)]):
+    return current_user
 
 
 @router.get("/{user_id}", response_model=UserInDB)
