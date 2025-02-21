@@ -15,7 +15,7 @@ from app.utils.logger import logger
 
 router = APIRouter(
     prefix="/reports",
-    tags=["emotion records"],
+    tags=["reports"],
 )
 
  
