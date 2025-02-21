@@ -21,7 +21,7 @@ class EmotionUpdate(BaseModel):
     name: str = None
     emoji: str | None = None
     color: str | None = None
-    is_negative: bool | None = False
+    is_negative: bool
 
 
 class EmotionsResponse(BaseModel):
