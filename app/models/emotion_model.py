@@ -7,7 +7,7 @@ class Emotion(BaseModel):
     emoji: str | None = None
     color: str | None = None
     team_id: int | None = None
-    is_negative: bool | None = False
+    is_negative: bool
 
     class Config:
         from_attributes = True

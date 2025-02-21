@@ -203,7 +203,7 @@ def get_anonymous_emotion_analysis(
     return result
 
 
-def generate_alert(negative_emotion_ratio: float) -> Optional[str]:
+def generate_alert(negative_emotion_ratio: float) -> str | None:
     if negative_emotion_ratio > 50:
         return f"Crítico: Metade das das emoções registradas são negativas!"
     elif negative_emotion_ratio > 30:
