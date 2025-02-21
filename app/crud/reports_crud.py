@@ -1,36 +1,90 @@
 from sqlalchemy.orm import Session
-from sqlalchemy import select, func, and_
+from sqlalchemy import select, func, and_, case
 
 from app.schemas.emotion_record_schema import EmotionRecord, Emotion
-from app.schemas.team_schema import user_teams
+from app.schemas.team_schema import user_teams, Team
 from app.schemas.user_schema import User
 from typing import Optional
+from datetime import datetime
 
 
 def get_emoji_distribution_report(db: Session, team_id: int, start_date: Optional[str], end_date: Optional[str]):
-    result = db.execute((select(Emotion.emoji, Emotion.name, func.count(EmotionRecord.id).label('frequency'))
-         .join(EmotionRecord, EmotionRecord.emotion_id == Emotion.id)
-         .where(and_(Emotion.team_id == team_id, 
-                     EmotionRecord.timestamp.between(start_date, end_date) if start_date and end_date else True,
-                     EmotionRecord.timestamp >= start_date if start_date and not end_date else True,
-                     EmotionRecord.timestamp <= end_date if end_date and not start_date else True))
-         .group_by(Emotion.emoji)
-         .order_by(func.count(EmotionRecord.id).desc()))).all()
+    query = (
+        select(
+            Emotion.emoji, 
+            Emotion.name, 
+            func.count(EmotionRecord.id).label('frequency'),
+            func.sum(case((Emotion.is_negative, 1), else_=0)).label('negative_count')
+        )
+        .join(EmotionRecord, EmotionRecord.emotion_id == Emotion.id)
+        .where(
+            and_(
+                Emotion.team_id == team_id,
+                EmotionRecord.timestamp.between(start_date, end_date) if start_date and end_date else True,
+                EmotionRecord.timestamp >= start_date if start_date and not end_date else True,
+                EmotionRecord.timestamp <= end_date if end_date and not start_date else True
+            )
+        )
+        .group_by(Emotion.emoji, Emotion.name)
+        .order_by(func.count(EmotionRecord.id).desc())
+    )
+    
+    result = db.execute(query).mappings().all()
 
-    return [{"emoji": row[0], "emotion_name": row[1], "frequency": row[2]} for row in result]
+    total_records = sum(row["frequency"] for row in result)
+    total_negatives = sum(row["negative_count"] for row in result)
+    negative_emotion_ratio = (total_negatives / total_records) * 100 if total_records > 0 else 0
+
+    alert = generate_alert(negative_emotion_ratio)
+
+    return {
+        "emoji_distribution": [
+            {"emoji": row["emoji"], "emotion_name": row["name"], "frequency": row["frequency"]}
+            for row in result
+        ],
+        "negative_emotion_ratio": negative_emotion_ratio,
+        "alert": alert
+    }
 
 
 def get_average_intensity_report(db: Session, team_id: int, start_date: Optional[str], end_date: Optional[str]):
-    result = db.execute((select(Emotion.emoji, Emotion.name, func.avg(EmotionRecord.intensity).label('avg_intensity'))
-            .join(EmotionRecord, EmotionRecord.emotion_id == Emotion.id)
-            .where(and_(Emotion.team_id == team_id, 
-                        EmotionRecord.timestamp.between(start_date, end_date) if start_date and end_date else True,
-                        EmotionRecord.timestamp >= start_date if start_date and not end_date else True,
-                        EmotionRecord.timestamp <= end_date if end_date and not start_date else True))
-            .group_by(Emotion.emoji, Emotion.name)
-            .order_by(func.avg(EmotionRecord.intensity).desc()))).all()
+    query = (
+        select(
+            Emotion.emoji, 
+            Emotion.name, 
+            func.avg(EmotionRecord.intensity).label('avg_intensity'),
+            func.sum(case((Emotion.is_negative, 1), else_=0)).label('negative_count'),
+            func.count(EmotionRecord.id).label('total_count')
+        )
+        .join(EmotionRecord, EmotionRecord.emotion_id == Emotion.id)
+        .where(
+            and_(
+                Emotion.team_id == team_id,
+                EmotionRecord.timestamp.between(start_date, end_date) if start_date and end_date else True,
+                EmotionRecord.timestamp >= start_date if start_date and not end_date else True,
+                EmotionRecord.timestamp <= end_date if end_date and not start_date else True
+            )
+        )
+        .group_by(Emotion.emoji, Emotion.name)
+        .order_by(func.avg(EmotionRecord.intensity).desc())
+    )
 
-    return [{ "emoji": row[0], "emotion_name": row[1], "avg_intensity": float(row[2])} for row in result]
+    result = db.execute(query).mappings().all()
+
+    total_records = sum(row["total_count"] for row in result)
+    total_negatives = sum(row["negative_count"] for row in result)
+    negative_emotion_ratio = (total_negatives / total_records) * 100 if total_records > 0 else 0
+
+    alert = generate_alert(negative_emotion_ratio)
+
+    return {
+        "average_intensity": [
+            {"emoji": row["emoji"], "emotion_name": row["name"], "avg_intensity": float(row["avg_intensity"])}
+            for row in result
+        ],
+        "negative_emotion_ratio": negative_emotion_ratio,
+        "alert": alert
+    }
 
 
 def get_emotion_analysis_by_user(
@@ -147,3 +201,14 @@ def get_anonymous_emotion_analysis(
         })
 
     return result
+
+
+def generate_alert(negative_emotion_ratio: float) -> str | None:
+    if negative_emotion_ratio > 50:
+        return f"Crítico: Metade das das emoções registradas são negativas!"
+    elif negative_emotion_ratio > 30:
+        return f"Atenção: Um pouco menos da metade das emoções registradas são negativas!"
+    elif negative_emotion_ratio > 15:
+        return f"Observação: Algumas das emoções registradas pelos colaboradores são negativas!"
+    else:
+        return None

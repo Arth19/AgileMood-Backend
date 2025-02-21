@@ -21,7 +21,9 @@ def create_emotion(db: Session, emotion: EmotionModel, user_id: int):
         name=emotion.name,
         emoji=emotion.emoji,
         color=emotion.color,
-        team_id=emotion.team_id
+        team_id=emotion.team_id,
+        is_negative=emotion.is_negative
+
     )
     db.add(db_emotion)
     db.commit()

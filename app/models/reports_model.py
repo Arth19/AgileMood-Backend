@@ -8,10 +8,22 @@ class EmojiDistribution(BaseModel):
     frequency: int
 
 
+class EmojiDistributionReport(BaseModel):
+    emoji_distribution: List[EmojiDistribution]
+    negative_emotion_ratio: float
+    alert: str | None = None
+
+
 class AverageIntensity(BaseModel):
     emoji: str
     emotion_name: str
     avg_intensity: float
+
+
+class AverageIntensityReport(BaseModel):
+    average_intensity: List[AverageIntensity]
+    negative_emotion_ratio: float
+    alert: str | None = None
 
 
 class EmotionAvgAndFrequency(EmojiDistribution):

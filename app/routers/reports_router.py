@@ -15,11 +15,11 @@ from app.utils.logger import logger
 
 router = APIRouter(
     prefix="/reports",
-    tags=["emotion records"],
+    tags=["reports"],
 )
 
-
-@router.get("/emoji-distribution/{team_id}", response_model=List[reports_model.EmojiDistribution])
+ 
+@router.get("/emoji-distribution/{team_id}", response_model=reports_model.EmojiDistributionReport)
 def emoji_distribution(
     current_user: Annotated[UserInDB, Depends(get_current_active_user)],
     team_id: int,
@@ -37,7 +37,7 @@ def emoji_distribution(
     return response
 
 
-@router.get("/average-intensity/{team_id}", response_model=List[reports_model.AverageIntensity])
+@router.get("/average-intensity/{team_id}", response_model=reports_model.AverageIntensityReport)
 def average_intensity(
     current_user: Annotated[UserInDB, Depends(get_current_active_user)],
     team_id: int,
