@@ -45,6 +45,15 @@ def get_emotion_by_id(db: Session, emotion_id: int, user_id: int):
     return db_emotion
 
 
+def get_emotion_id_by_name(db: Session, emotion_name: str):
+    db_emotion = db.query(Emotion).filter(Emotion.name == emotion_name).first()
+    if db_emotion is None:
+        logger.error(f"Emotion {emotion_name} not found.")
+        return None
+
+    return db_emotion.id
+
+
 def get_all_emotions(db: Session, user_id: int):
     managed_teams = db.query(Team).filter(Team.manager_id == user_id).all()
     if not managed_teams:

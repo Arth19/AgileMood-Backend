@@ -34,7 +34,7 @@ def create_access_token(data: dict | None = None):
 def authenticate_user(db: Session, email: str, password: str) -> UserInDB | bool | None:
     db_user = user_crud.get_user_by_email(db, email)
     if db_user is None:
-        logger.debug("Email not found")
+        logger.debug("User not found")
         return False
     if db_user.hashed_password != user_crud.get_password_hash(password):
         logger.debug("Incorrect password")

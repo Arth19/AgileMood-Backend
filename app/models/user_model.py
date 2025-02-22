@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Literal
 
+
 class User(BaseModel):
     name: str
     email: str
@@ -19,7 +20,6 @@ class UserInDB(User):
 
 
 class UserInTeam(BaseModel):
-    id: int
     name: str
     email: str
     team_id: int | None = None

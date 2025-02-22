@@ -3,7 +3,6 @@ from typing import List
 
 
 class EmojiDistribution(BaseModel):
-    emoji: str
     emotion_name: str
     frequency: int
 
@@ -15,7 +14,6 @@ class EmojiDistributionReport(BaseModel):
 
 
 class AverageIntensity(BaseModel):
-    emoji: str
     emotion_name: str
     avg_intensity: float
 

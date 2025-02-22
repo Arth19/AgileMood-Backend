@@ -4,7 +4,7 @@ from typing import Annotated
 
 from app.models.team_model import Team, TeamResponse, AllTeamsResponse, TeamData
 from app.models.user_model import UserInDB
-from app.models.emotion_model import EmotionsResponse
+from app.models.emotion_model import AllEmotionsResponse
 from app.databases.sqlite_database import get_db
 from app.utils.constants import Errors, Role
 from app.utils.logger import logger
@@ -54,12 +54,12 @@ def get_team_by_id(
     """
     logger.debug(f"Call to get the Team with ID: {team_id}")
 
-    db_team = team_crud.get_team_by_id(db, team_id)
-    if db_team is None:
+    team = team_crud.get_team_by_id(db, team_id)
+    if team is None:
         logger.error(f"Team with ID {team_id} not found.")
-        raise Errors.REPORT_NOT_FOUND
+        raise Errors.NOT_FOUND
 
-    return db_team
+    return team
 
 
 @router.get("/", response_model=AllTeamsResponse)
@@ -72,12 +72,14 @@ def get_all_teams(
     """
     logger.debug("Call to list all created Teams.")
 
-    db_teams = team_crud.get_all_teams(db)
-    if not db_teams:
-        logger.error("There no created teams in our database.")
-        raise Errors.REPORT_NOT_FOUND
+    if current_user.role != Role.MANAGER:
+        raise Errors.NO_PERMISSION
 
-    return {"teams": db_teams}
+    teams = team_crud.get_all_teams(db)
+    if not teams:
+        logger.error("There no teams in our database.")
+
+    return AllTeamsResponse(teams=teams)
 
 
 @router.put("/{team_id}", response_model=TeamResponse)
@@ -101,7 +103,7 @@ def update_team(
     db_team = team_crud.update_team(db, team_id, team_update)
     if db_team is None:
         logger.error(f"Failed to update team with ID: {team_id}")
-        raise Errors.REPORT_NOT_FOUND
+        raise Errors.NOT_FOUND
 
     return db_team
 
@@ -113,7 +115,7 @@ def delete_team(
         db: Session = Depends(get_db),
 ):
     """
-    Deletes a team by it's ID.
+    Deletes a team by ID.
     Only users with the 'manager' role can delete teams.
     """
     logger.debug(f"Call to delete the Team with ID: {team_id}")
@@ -125,7 +127,7 @@ def delete_team(
     success = team_crud.delete_team(db, team_id)
     if not success:
         logger.error(f"Team with ID {team_id} not found.")
-        raise Errors.REPORT_NOT_FOUND
+        raise Errors.NOT_FOUND
 
     return {"message": f"Team with ID {team_id} successfully deleted."}
 
@@ -178,7 +180,7 @@ def remove_team_member(
     return db_team
 
 
-@router.get("/{team_id}/emotions", response_model=EmotionsResponse)
+@router.get("/{team_id}/emotions", response_model=AllEmotionsResponse)
 def get_emotions_by_team(
         team_id: int,
         current_user: Annotated[UserInDB, Depends(get_current_active_user)],
@@ -189,8 +191,11 @@ def get_emotions_by_team(
     """
     logger.debug(f"Call to list all Emotions from the Team with ID: {team_id}")
 
+    if current_user.role != Role.MANAGER:
+        raise Errors.NO_PERMISSION
+
     emotions = emotion_crud.get_emotions_by_team(db, team_id, current_user.id)
     if emotions is None:
-        raise HTTPException(status_code=403, detail=Errors.NO_PERMISSION)
+        raise Errors.NO_PERMISSION
 
-    return {"emotions": emotions}
+    return AllEmotionsResponse(emotions=emotions)

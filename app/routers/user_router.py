@@ -25,11 +25,11 @@ router = APIRouter(
 )
 
 
-@router.post("/login")
+@router.post("/login", response_model=Token)
 def login(
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
     db: Session = Depends(get_db),
-) -> Token:
+):
     if not authenticate_user(db, form_data.username, form_data.password):
         raise Errors.INCORRECT_CREDENTIALS
 
@@ -58,7 +58,10 @@ def get_logged_user(
 
     team_id = user_crud.get_user_team(db, current_user.id)
     result = UserInTeam(
-        id=current_user.id, name=current_user.name, email=current_user.email, team_id=team_id
+        id=current_user.id,
+        name=current_user.name,
+        email=current_user.email,
+        team_id=team_id
     )
 
     return result
@@ -66,17 +69,17 @@ def get_logged_user(
 
 @router.get("/{user_id}", response_model=UserInDB)
 def get_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = user_crud.get_user_by_id(db, user_id=user_id)
-    if db_user is None:
-        raise Errors.USER_NOT_FOUND
-    return db_user
+    user = user_crud.get_user_by_id(db, user_id=user_id)
+    if user is None:
+        raise Errors.NOT_FOUND
+    return user
 
 
 @router.get("/")
 def get_user_by_email(email: str, db: Session = Depends(get_db)):
     user = user_crud.get_user_by_email(db, email)
     if not user:
-        raise Errors.USER_NOT_FOUND
+        raise Errors.NOT_FOUND
     return user
 
 
@@ -98,8 +101,8 @@ def update_user_by_id(
 
 @router.delete("/{user_id}")
 def delete_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = user_crud.get_user_by_id(db, user_id=user_id)
-    if db_user is None:
-        raise Errors.USER_NOT_FOUND
+    user = user_crud.get_user_by_id(db, user_id=user_id)
+    if user is None:
+        raise Errors.NOT_FOUND
     user_crud.delete_user(db=db, user_id=user_id)
     return Messages.USER_DELETE

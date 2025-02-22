@@ -3,7 +3,6 @@ from http import HTTPStatus
 
 
 class Errors:
-    USER_NOT_FOUND = HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="User not found")
     INACTIVE_USER = HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Inactive user")
     EMAIL_ALREADY_EXISTS = HTTPException(status_code=HTTPStatus.BAD_REQUEST, detail="Email already exists")
     INVALID_PARAMS = HTTPException(status_code=HTTPStatus.UNPROCESSABLE_ENTITY, detail="Invalid params")
@@ -14,11 +13,12 @@ class Errors:
     CREDENTIALS_EXCEPTION = HTTPException(status_code=HTTPStatus.UNAUTHORIZED, detail="Could not validate credentials",
                                           headers={"WWW-Authenticate": "Bearer"})
 
-    REPORT_NOT_FOUND = HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Emotion report not found")
+    NOT_FOUND = HTTPException(status_code=HTTPStatus.NOT_FOUND)
 
 
 class Messages:
     USER_DELETE = {"message": "Used deleted"}
+    EMOTION_DELETE = {"message": "Emotion deleted"}
 
 
 class DataBase:

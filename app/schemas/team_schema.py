@@ -26,4 +26,4 @@ class Team(db.Base):
 
     members = relationship("User", secondary="user_teams", back_populates="teams")
 
-    emotions = relationship("Emotion", back_populates="team")
+    emotions = relationship("Emotion", back_populates="team", cascade="all, delete")

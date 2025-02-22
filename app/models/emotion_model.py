@@ -24,5 +24,5 @@ class EmotionUpdate(BaseModel):
     is_negative: bool
 
 
-class EmotionsResponse(BaseModel):
+class AllEmotionsResponse(BaseModel):
     emotions: List[EmotionInDb]

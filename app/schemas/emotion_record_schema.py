@@ -13,7 +13,7 @@ class Emotion(db.Base):
     name = Column(String, nullable=False)
     emoji = Column(String, nullable=True)
     color = Column(String, nullable=True)
-    team_id = Column(Integer, ForeignKey("team.id"), nullable=False)
+    team_id = Column(Integer, ForeignKey("team.id", ondelete="CASCADE"), nullable=False)
     is_negative = Column(Boolean, nullable=False, default=False)
 
     team = relationship("Team", back_populates="emotions")
@@ -33,4 +33,4 @@ class EmotionRecord(db.Base):
     user = relationship("User", back_populates="emotion_records")
     emotion = relationship("Emotion")
 
-    timestamp = Column(DateTime, default=datetime.datetime.now)
+    created_at = Column(DateTime, default=datetime.datetime.now)
