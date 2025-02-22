@@ -71,7 +71,7 @@ def get_logged_user(
 def get_user(user_id: int, db: Session = Depends(get_db)):
     user = user_crud.get_user_by_id(db, user_id=user_id)
     if user is None:
-        raise Errors.USER_NOT_FOUND
+        raise Errors.NOT_FOUND
     return user
 
 
@@ -79,7 +79,7 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
 def get_user_by_email(email: str, db: Session = Depends(get_db)):
     user = user_crud.get_user_by_email(db, email)
     if not user:
-        raise Errors.USER_NOT_FOUND
+        raise Errors.NOT_FOUND
     return user
 
 
@@ -103,6 +103,6 @@ def update_user_by_id(
 def delete_user(user_id: int, db: Session = Depends(get_db)):
     user = user_crud.get_user_by_id(db, user_id=user_id)
     if user is None:
-        raise Errors.USER_NOT_FOUND
+        raise Errors.NOT_FOUND
     user_crud.delete_user(db=db, user_id=user_id)
     return Messages.USER_DELETE

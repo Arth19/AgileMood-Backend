@@ -29,7 +29,6 @@ def emoji_distribution_by_team(
 ):
 
     if current_user.role != Role.MANAGER:
-        logger.error(f"User doesn't have the permission to remove members from teams.")
         raise Errors.NO_PERMISSION
 
     response = reports_crud.get_emoji_distribution_report(db, team_id, start_date, end_date)
@@ -47,7 +46,6 @@ def average_intensity_by_team(
 ):
 
     if current_user.role != Role.MANAGER:
-        logger.error(f"User doesn't have the permission to remove members from teams.")
         raise Errors.NO_PERMISSION
 
     response = reports_crud.get_average_intensity_report(db, team_id, start_date, end_date)
@@ -66,7 +64,6 @@ def get_emotion_analysis_by_user(
 ):
 
     if current_user.role != Role.MANAGER:
-        logger.error(f"User doesn't have the permission to remove members from teams.")
         raise Errors.NO_PERMISSION
 
     response = reports_crud.get_emotion_analysis_by_user(db, team_id, user_id, start_date, end_date)
@@ -84,7 +81,6 @@ def get_anonymous_emotion_analysis_by_team(
 ):
 
     if current_user.role != Role.MANAGER:
-        logger.error(f"User doesn't have the permission to remove members from teams.")
         raise Errors.NO_PERMISSION
 
     response = reports_crud.get_anonymous_emotion_analysis(db, team_id, start_date, end_date)

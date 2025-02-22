@@ -9,12 +9,13 @@ from app.models.emotion_record_model import EmotionRecordInDb, EmotionRecord, Al
 
 from app.models.user_model import UserInDB
 
+from app.routers.authentication import get_current_active_user
+
 from app.databases.sqlite_database import get_db
 
-from app.utils.constants import Errors
+from app.utils.constants import Errors, Role
 from app.utils.logger import logger
 
-from app.routers.authentication import get_current_active_user
 
 router = APIRouter(
     prefix="/emotion_record",
@@ -45,10 +46,10 @@ def get_all_emotion_report_for_logged_user(
 ):
     logger.debug("call to get all emotion records")
 
-    response = emotion_record_crud.get_emotion_records_by_user_id(db, current_user.id)
+    response = emotion_record_crud.get_emotion_records_by_user_id(db, [current_user.id])
     if response is None:
         logger.error(f"no emotion record found in the database")
-        raise Errors.REPORT_NOT_FOUND
+
     return AllEmotionReportsResponse(emotion_records=response)
 
 
@@ -64,5 +65,5 @@ def get_emotion_report_for_logged_user_by_emotion_name(
     response = emotion_record_crud.get_emotion_records_by_user_id_and_emotion_id(db, current_user.id, emotion_id)
     if response is None:
         logger.error(f"no emotion record found in the database for this emotion name: {emotion_name}")
-        raise Errors.REPORT_NOT_FOUND
+        raise Errors.NOT_FOUND
     return AllEmotionReportsResponse(emotion_records=response)

@@ -13,7 +13,7 @@ class Emotion(db.Base):
     name = Column(String, nullable=False)
     emoji = Column(String, nullable=True)
     color = Column(String, nullable=True)
-    team_id = Column(Integer, ForeignKey("team.id"), nullable=False)
+    team_id = Column(Integer, ForeignKey("team.id", ondelete="CASCADE"), nullable=False)
     is_negative = Column(Boolean, nullable=False, default=False)
 
     team = relationship("Team", back_populates="emotions")

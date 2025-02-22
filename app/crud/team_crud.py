@@ -3,8 +3,14 @@ from sqlalchemy.orm import Session
 
 from app.schemas.team_schema import Team, user_teams
 from app.schemas.user_schema import User
+
 from app.crud.user_crud import get_user_by_id
+from app.crud.emotion_record_crud import get_emotion_records_by_user_id
+
 from app.models.team_model import Team as TeamModel
+from app.models.team_model import TeamResponse
+from app.models.user_model import User as UserModel
+
 from app.utils.logger import logger
 
 
@@ -28,9 +34,11 @@ def get_team_by_id(db: Session, team_id: int):
     """
 
     team = db.query(Team).filter(Team.id == team_id).first()
+    emotions_records = get_emotion_records_by_user_id(db, [user.id for user in team.members])
     team_data = {
         "team_data": team,
         "members": team.members,
+        "emotions_reports": emotions_records
         }
     
     return team_data
@@ -45,10 +53,7 @@ def get_all_teams(db: Session):
     result = []
 
     for team in all_teams:
-        result.append({
-        "team_data": db.query(Team).filter(Team.id == team.id).first(),
-        "members": db.query(User).join(user_teams).filter(user_teams.c.team_id == team.id).all(),
-        })
+        result.append(db.query(Team).filter(Team.id.is_(team.id)).first())
         
     return result
 
@@ -59,8 +64,8 @@ def update_team(db: Session, team_id: int, team_update: TeamModel):
     """
     db_team = db.query(Team).filter(Team.id == team_id).first()
     team_data = {
-    "team_data": db_team,
-    "members": db.query(User).join(user_teams).filter(user_teams.c.team_id == team_id).all(),
+        "team_data": db_team,
+        "members": db.query(User).join(user_teams).filter(user_teams.c.team_id == team_id).all(),
     }
     
     if db_team is None:

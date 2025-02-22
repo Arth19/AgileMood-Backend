@@ -54,7 +54,7 @@ def get_emotion_by_id(
     reports = emotion_crud.get_emotion_by_id(db, emotion_id, current_user.id)
     if reports is None:
         logger.error(f"no emotion report found for this id: ", emotion_id)
-        raise Errors.REPORT_NOT_FOUND
+        raise Errors.NOT_FOUND
     
     return AllEmotionReportsResponse(reports=reports)
 
@@ -72,7 +72,6 @@ def get_all_emotions(
     emotions = emotion_crud.get_all_emotions(db, current_user.id)
     if emotions is None:
         logger.error(f"no emotions found in the database")
-        raise Errors.REPORT_NOT_FOUND
     
     return AllEmotionsResponse(emotions=emotions)
 
@@ -110,6 +109,6 @@ def delete_emotion_by_id(
 
     success = emotion_crud.delete_emotion(db, emotion_id, current_user.id)
     if not success:
-        raise Errors.REPORT_NOT_FOUND
+        raise Errors.NOT_FOUND
 
     return Messages.EMOTION_DELETE

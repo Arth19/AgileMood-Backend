@@ -20,7 +20,6 @@ class UserInDB(User):
 
 
 class UserInTeam(BaseModel):
-    id: int
     name: str
     email: str
     team_id: int | None = None
