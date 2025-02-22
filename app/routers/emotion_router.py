@@ -4,14 +4,14 @@ from typing import Annotated
 
 from app.crud import emotion_crud
 
-import app.models.emotion_model as emotion_model
-import app.models.emotion_record_model as emotion_record_model
+from app.models.emotion_model import EmotionInDb, Emotion, AllEmotionsResponse
+from app.models.emotion_record_model import AllEmotionReportsResponse
 
 from app.models.user_model import UserInDB
 
 from app.databases.sqlite_database import get_db
 
-from app.utils.constants import Errors, Role
+from app.utils.constants import Errors, Role, Messages
 from app.utils.logger import logger
 
 from app.routers.authentication import get_current_active_user
@@ -22,9 +22,9 @@ router = APIRouter(
 )
 
 
-@router.post("/", response_model=emotion_model.Emotion)
+@router.post("/", response_model=EmotionInDb)
 def create_emotion(
-        emotion: emotion_model.Emotion,
+        emotion: Emotion,
         current_user: Annotated[UserInDB, Depends(get_current_active_user)],
         db: Session = Depends(get_db),
 ):
@@ -40,7 +40,7 @@ def create_emotion(
     return response
 
 
-@router.get("/{emotion_id}", response_model=emotion_record_model.AllEmotionReportsResponse)
+@router.get("/{emotion_id}", response_model=AllEmotionReportsResponse)
 def get_emotion_by_id(
         current_user: Annotated[UserInDB, Depends(get_current_active_user)],
         emotion_id: int,
@@ -51,15 +51,15 @@ def get_emotion_by_id(
     if current_user.role != Role.MANAGER:
         raise Errors.NO_PERMISSION
     
-    response = emotion_crud.get_emotion_by_id(db, emotion_id, current_user.id)
-    if response is None:
+    reports = emotion_crud.get_emotion_by_id(db, emotion_id, current_user.id)
+    if reports is None:
         logger.error(f"no emotion report found for this id: ", emotion_id)
         raise Errors.REPORT_NOT_FOUND
     
-    return {"reports": response}
+    return AllEmotionReportsResponse(reports=reports)
 
 
-@router.get("/", response_model=emotion_model.EmotionsResponse)
+@router.get("/", response_model=AllEmotionsResponse)
 def get_all_emotions(
         current_user: Annotated[UserInDB, Depends(get_current_active_user)],
         db: Session = Depends(get_db),
@@ -69,15 +69,15 @@ def get_all_emotions(
     if current_user.role != Role.MANAGER:
         raise Errors.NO_PERMISSION
 
-    response = emotion_crud.get_all_emotions(db, current_user.id)
-    if response is None:
+    emotions = emotion_crud.get_all_emotions(db, current_user.id)
+    if emotions is None:
         logger.error(f"no emotions found in the database")
         raise Errors.REPORT_NOT_FOUND
     
-    return {"emotions": response}
+    return AllEmotionsResponse(emotions=emotions)
 
 
-@router.put("/{emotion_id}", response_model=emotion_model.Emotion)
+@router.put("/{emotion_id}", response_model=EmotionInDb)
 def update_emotion_by_id(
         emotion_id: int,
         emotion_update: dict,
@@ -98,7 +98,7 @@ def update_emotion_by_id(
 
 
 @router.delete("/{emotion_id}")
-def delete_emotion(
+def delete_emotion_by_id(
         emotion_id: int,
         current_user: Annotated[UserInDB, Depends(get_current_active_user)],
         db: Session = Depends(get_db),
@@ -112,4 +112,4 @@ def delete_emotion(
     if not success:
         raise Errors.REPORT_NOT_FOUND
 
-    return {"message": f"Emotion with ID {emotion_id} was deleted successfully."}
+    return Messages.EMOTION_DELETE

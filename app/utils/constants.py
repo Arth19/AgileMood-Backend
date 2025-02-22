@@ -19,6 +19,7 @@ class Errors:
 
 class Messages:
     USER_DELETE = {"message": "Used deleted"}
+    EMOTION_DELETE = {"message": "Emotion deleted"}
 
 
 class DataBase:

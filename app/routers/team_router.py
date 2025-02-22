@@ -4,7 +4,7 @@ from typing import Annotated
 
 from app.models.team_model import Team, TeamResponse, AllTeamsResponse, TeamData
 from app.models.user_model import UserInDB
-from app.models.emotion_model import EmotionsResponse
+from app.models.emotion_model import AllEmotionsResponse
 from app.databases.sqlite_database import get_db
 from app.utils.constants import Errors, Role
 from app.utils.logger import logger
@@ -72,12 +72,12 @@ def get_all_teams(
     """
     logger.debug("Call to list all created Teams.")
 
-    db_teams = team_crud.get_all_teams(db)
-    if not db_teams:
+    teams = team_crud.get_all_teams(db)
+    if not teams:
         logger.error("There no created teams in our database.")
         raise Errors.REPORT_NOT_FOUND
 
-    return {"teams": db_teams}
+    return AllTeamsResponse(teams=teams)
 
 
 @router.put("/{team_id}", response_model=TeamResponse)
@@ -113,7 +113,7 @@ def delete_team(
         db: Session = Depends(get_db),
 ):
     """
-    Deletes a team by it's ID.
+    Deletes a team by ID.
     Only users with the 'manager' role can delete teams.
     """
     logger.debug(f"Call to delete the Team with ID: {team_id}")
@@ -178,7 +178,7 @@ def remove_team_member(
     return db_team
 
 
-@router.get("/{team_id}/emotions", response_model=EmotionsResponse)
+@router.get("/{team_id}/emotions", response_model=AllEmotionsResponse)
 def get_emotions_by_team(
         team_id: int,
         current_user: Annotated[UserInDB, Depends(get_current_active_user)],
@@ -193,4 +193,4 @@ def get_emotions_by_team(
     if emotions is None:
         raise HTTPException(status_code=403, detail=Errors.NO_PERMISSION)
 
-    return {"emotions": emotions}
+    return AllEmotionsResponse(emotions=emotions)

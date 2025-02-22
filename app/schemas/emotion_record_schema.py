@@ -33,4 +33,4 @@ class EmotionRecord(db.Base):
     user = relationship("User", back_populates="emotion_records")
     emotion = relationship("Emotion")
 
-    timestamp = Column(DateTime, default=datetime.datetime.now)
+    created_at = Column(DateTime, default=datetime.datetime.now)

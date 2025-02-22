@@ -25,7 +25,7 @@ class EmotionRecord(BaseModel):
 
 class EmotionRecordInDb(EmotionRecord):
     id:  int | None = None
-    timestamp: datetime = Field(default_factory=datetime.now)
+    created_at: datetime = Field(default_factory=datetime.now)
 
 
 class AllEmotionReportsResponse(BaseModel):

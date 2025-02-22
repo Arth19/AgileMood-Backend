@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from typing import List, Optional, Annotated
+from typing import Annotated
 from datetime import date
 
 from app.crud import reports_crud
@@ -20,11 +20,11 @@ router = APIRouter(
 
  
 @router.get("/emoji-distribution/{team_id}", response_model=reports_model.EmojiDistributionReport)
-def emoji_distribution(
+def emoji_distribution_by_team(
     current_user: Annotated[UserInDB, Depends(get_current_active_user)],
     team_id: int,
-    start_date: Optional[date] = None,
-    end_date: Optional[date] = None,
+    start_date: date | None = None,
+    end_date: date | None = None,
     db: Session = Depends(get_db)
 ):
 
@@ -38,11 +38,11 @@ def emoji_distribution(
 
 
 @router.get("/average-intensity/{team_id}", response_model=reports_model.AverageIntensityReport)
-def average_intensity(
+def average_intensity_by_team(
     current_user: Annotated[UserInDB, Depends(get_current_active_user)],
     team_id: int,
-    start_date: Optional[date] = None,
-    end_date: Optional[date] = None,
+    start_date: date | None = None,
+    end_date: date | None = None,
     db: Session = Depends(get_db)
 ):
 
@@ -60,8 +60,8 @@ def get_emotion_analysis_by_user(
     current_user: Annotated[UserInDB, Depends(get_current_active_user)],
     team_id: int,
     user_id: int,
-    start_date: Optional[date] = None,
-    end_date: Optional[date] = None,
+    start_date: date | None = None,
+    end_date: date | None = None,
     db: Session = Depends(get_db)
 ):
 
@@ -74,13 +74,12 @@ def get_emotion_analysis_by_user(
     return response
 
 
-
 @router.get("/anonymous_records_emotion_analysis/{team_id}", response_model=reports_model.AnalysisByUser)
-def get_anonymous_emotion_analysis(
+def get_anonymous_emotion_analysis_by_team(
     current_user: Annotated[UserInDB, Depends(get_current_active_user)],
     team_id: int,
-    start_date: Optional[date] = None,
-    end_date: Optional[date] = None,
+    start_date: date | None = None,
+    end_date: date | None = None,
     db: Session = Depends(get_db)
 ):
 

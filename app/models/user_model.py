@@ -1,6 +1,7 @@
 from pydantic import BaseModel, Field
 from typing import Literal
 
+
 class User(BaseModel):
     name: str
     email: str
