@@ -23,3 +23,5 @@ class UserInTeam(BaseModel):
     name: str
     email: str
     team_id: int | None = None
+    role: Literal["manager", "employee"] = Field(default="employee", description="User role in the organization")
+    avatar: str | None = None

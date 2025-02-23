@@ -19,10 +19,11 @@ def get_user_by_email(db: Session, email: str) -> UserInDB | None:
 
 def get_user_team(db: Session, user_id: int):
     
-    team_id = db.execute((select(user_teams.c.team_id).where(user_teams.c.user_id == user_id))).first()
-    
-    return team_id[0]
+    team_id = db.execute(
+        select(user_teams.c.team_id).where(user_teams.c.user_id == user_id)
+    ).scalar()
 
+    return team_id
 
 def create_user(db: Session, user: UserCreate):
     db_user = UserModel(
