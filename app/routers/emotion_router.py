@@ -66,8 +66,8 @@ def get_all_emotions(
 ):
     logger.debug("call to get all emotions")
 
-    if current_user.role != Role.MANAGER:
-        raise Errors.NO_PERMISSION
+    # if current_user.role != Role.MANAGER:
+    #     raise Errors.NO_PERMISSION
 
     emotions = emotion_crud.get_all_emotions(db, current_user.id)
     if emotions is None:
