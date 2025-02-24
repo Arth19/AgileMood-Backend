@@ -6,7 +6,7 @@ from app.models.team_model import Team, TeamResponse, AllTeamsResponse, TeamData
 from app.models.user_model import UserInDB
 from app.models.emotion_model import AllEmotionsResponse
 from app.databases.sqlite_database import get_db
-from app.utils.constants import Errors, Role
+from app.utils.constants import Errors, Role, Messages
 from app.utils.logger import logger
 from app.crud import team_crud
 from app.crud import emotion_crud
@@ -53,8 +53,9 @@ def get_team_by_id(
     Returns a Team by its ID.
     """
     logger.debug(f"Call to get the Team with ID: {team_id}")
-
+    emotions = emotion_crud.get_emotions_by_team(db, team_id)
     team = team_crud.get_team_by_id(db, team_id)
+    team["emotions"] = emotions
     if team is None:
         logger.error(f"Team with ID {team_id} not found.")
         raise Errors.NOT_FOUND
@@ -132,7 +133,7 @@ def delete_team(
     return {"message": f"Team with ID {team_id} successfully deleted."}
 
 
-@router.post("/{team_id}/{user_id}", response_model=TeamResponse)
+@router.post("/{team_id}/{user_id}")
 def add_team_member(
         team_id: int,
         user_id: int,
@@ -153,7 +154,7 @@ def add_team_member(
     if db_team is None:
         raise Errors.INVALID_PARAMS
 
-    return db_team
+    return Messages.MEMBER_ADDED_TO_TEAM
 
 
 @router.delete("/{team_id}/{user_id}", response_model=TeamResponse)
@@ -191,10 +192,10 @@ def get_emotions_by_team(
     """
     logger.debug(f"Call to list all Emotions from the Team with ID: {team_id}")
 
-    if current_user.role != Role.MANAGER:
-        raise Errors.NO_PERMISSION
+    # if current_user.role != Role.MANAGER:
+    #     raise Errors.NO_PERMISSION
 
-    emotions = emotion_crud.get_emotions_by_team(db, team_id, current_user.id)
+    emotions = emotion_crud.get_emotions_by_team(db, team_id)
     if emotions is None:
         raise Errors.NO_PERMISSION
 

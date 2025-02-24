@@ -108,12 +108,9 @@ def delete_emotion(db: Session, emotion_id: int, user_id: int):
     return True
 
 
-def get_emotions_by_team(db: Session, team_id: int, user_id: int):
+def get_emotions_by_team(db: Session, team_id: int):
     """
     Returns all Emotions from a Team if the user is its manager.
     """
-    if not is_manager_of_team(db, user_id, team_id):
-        logger.error(f"User with ID {user_id} isn't the Team manager where Team's ID is{team_id}.")
-        return None
 
     return db.query(Emotion).filter(Emotion.team_id == team_id).all()
