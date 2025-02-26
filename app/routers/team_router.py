@@ -10,6 +10,7 @@ from app.utils.constants import Errors, Role, Messages
 from app.utils.logger import logger
 from app.crud import team_crud
 from app.crud import emotion_crud
+from app.crud import user_crud
 from app.routers.authentication import get_current_active_user
 
 router = APIRouter(
@@ -33,10 +34,8 @@ def create_team(
     if current_user.role != Role.MANAGER:
         logger.error(f"User doesn't have the permission to create new teams.")
         raise Errors.NO_PERMISSION
-
-    team.manager_id = current_user.id
     
-    db_team = team_crud.create_team(db, team)
+    db_team = team_crud.create_team(db, team.name, current_user.id)
     if db_team is None:
         raise Errors.INVALID_PARAMS
 
@@ -133,12 +132,12 @@ def delete_team(
     return {"message": f"Team with ID {team_id} successfully deleted."}
 
 
-@router.post("/{team_id}/{user_id}")
+@router.post("/{team_id}")
 def add_team_member(
         team_id: int,
-        user_id: int,
         current_user: Annotated[UserInDB, Depends(get_current_active_user)],
         db: Session = Depends(get_db),
+        user_email: str = Query(..., description="Email do usuário a ser adicionado"),
 ):
     """
     Adds a new member to a team.
@@ -147,10 +146,16 @@ def add_team_member(
     logger.debug("Call to add a new member to a team.")
 
     if current_user.role != Role.MANAGER:
-        logger.error(f"User doesn't have the permission to add new members to a team.")
+        logger.error("User doesn't have the permission to add new members to a team.")
         raise Errors.NO_PERMISSION
     
-    db_team = team_crud.add_team_member(db, team_id, user_id)
+    # Busca o user_id usando o user_email
+    user = user_crud.get_user_by_email(db, user_email)
+    if user is None:
+        logger.error("User not found with the provided email.")
+        raise Errors.INVALID_PARAMS
+    
+    db_team = team_crud.add_team_member(db, team_id, user.id)
     if db_team is None:
         raise Errors.INVALID_PARAMS
 

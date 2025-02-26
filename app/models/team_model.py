@@ -8,7 +8,6 @@ from typing import List
 
 class Team(BaseModel):
     name: str
-    manager_id: int | None = None
 
     class Config:
         from_attributes = True
@@ -16,6 +15,7 @@ class Team(BaseModel):
 
 class TeamData(Team):
     id: int
+    manager_id: int | None = None
     created_at: datetime = Field(default_factory=datetime.now)
 
     class Config:
@@ -31,3 +31,22 @@ class TeamResponse(BaseModel):
 
 class AllTeamsResponse(BaseModel):
     teams: List[TeamData]
+
+
+# class Team(BaseModel):
+#     name: str
+
+#     class Config:
+#         from_attributes = True
+
+
+# class TeamCreate(Team):
+#     manager_id: int | None = None
+
+
+# class TeamData(TeamCreate):
+#     id: int
+#     created_at: datetime = Field(default_factory=datetime.now)
+
+#     class Config:
+#         from_attributes = True

@@ -14,13 +14,13 @@ from app.models.user_model import User as UserModel
 from app.utils.logger import logger
 
 
-def create_team(db: Session, team: Team):
+def create_team(db: Session, name: str, manager_id: int):
     """
     Creates a new team in the database.
     """
     db_team = Team(
-        name=team.name,
-        manager_id=team.manager_id
+        name=name,
+        manager_id=manager_id
     )
     db.add(db_team)
     db.commit()
