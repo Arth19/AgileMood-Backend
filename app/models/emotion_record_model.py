@@ -30,3 +30,7 @@ class EmotionRecordInDb(EmotionRecord):
 
 class AllEmotionReportsResponse(BaseModel):
     emotion_records: List[EmotionRecordInDb]
+
+
+class EmotionRecordInTeam(EmotionRecord):
+    user_name:  str | None = None
