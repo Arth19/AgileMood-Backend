@@ -22,12 +22,13 @@ def create_emotion_record(db: Session, emotion_record: EmotionRecord):
 
 
 def get_emotion_records_by_user_id(db: Session, users_id: list[int]):
-    emotion_records = db.query(EmotionRecord).filter(EmotionRecord.user_id.in_(users_id)).all()
+    emotion_records: [EmotionRecordInDb] = db.query(EmotionRecord).filter(EmotionRecord.user_id.in_(users_id)).all()
 
     result: list[EmotionRecordInDb] = []
     for emotion_record in emotion_records:
         if emotion_record.is_anonymous:
             emotion_record.user_id = None
+
         result.append(emotion_record)
 
     return result
@@ -41,6 +42,7 @@ def get_emotion_records_by_user_id_and_emotion_id(db: Session, user_id: int, emo
     for emotion_record in emotion_records:
         if emotion_record.is_anonymous:
             emotion_record.user_id = None
+
         result.append(emotion_record)
 
     return result

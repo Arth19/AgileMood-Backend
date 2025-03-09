@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
 from app.models.user_model import UserInTeam
-from app.models.emotion_record_model import EmotionRecordInDb
+from app.models.emotion_record_model import EmotionRecordInTeam
 from app.models.emotion_model import EmotionInDb
 from typing import List
 
@@ -25,7 +25,7 @@ class TeamData(Team):
 class TeamResponse(BaseModel):
     team_data: TeamData
     members: List[UserInTeam]
-    emotions_reports: List[EmotionRecordInDb]
+    emotions_reports: List[EmotionRecordInTeam]
     emotions: List[EmotionInDb]
 
 

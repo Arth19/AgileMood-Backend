@@ -8,8 +8,7 @@ from app.crud.user_crud import get_user_by_id
 from app.crud.emotion_record_crud import get_emotion_records_by_user_id
 
 from app.models.team_model import Team as TeamModel
-from app.models.team_model import TeamResponse
-from app.models.user_model import User as UserModel
+from app.models.emotion_record_model import EmotionRecordInTeam
 
 from app.utils.logger import logger
 
@@ -34,12 +33,15 @@ def get_team_by_id(db: Session, team_id: int):
     """
 
     team = db.query(Team).filter(Team.id == team_id).first()
-    emotions_records = get_emotion_records_by_user_id(db, [user.id for user in team.members])
+    emotions_records: list[EmotionRecordInTeam] = get_emotion_records_by_user_id(db, [user.id for user in team.members])
+    for i in range(len(team.members)):
+        emotions_records[i].user_name = team.members[i].name
+
     team_data = {
         "team_data": team,
         "members": team.members,
         "emotions_reports": emotions_records
-        }
+    }
     
     return team_data
 

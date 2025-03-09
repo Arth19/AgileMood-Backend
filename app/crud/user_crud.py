@@ -25,6 +25,7 @@ def get_user_team(db: Session, user_id: int):
 
     return team_id
 
+
 def create_user(db: Session, user: UserCreate):
     db_user = UserModel(
         name=user.name,
