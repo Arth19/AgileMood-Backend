@@ -31,18 +31,26 @@ def get_team_by_id(db: Session, team_id: int):
     """
     Returns a team by ID
     """
-
     team = db.query(Team).filter(Team.id == team_id).first()
-    emotions_records: list[EmotionRecordInTeam] = get_emotion_records_by_user_id(db, [user.id for user in team.members])
-    for i in range(len(team.members)):
+
+    if not team:
+        return None  # 🔥 Retorna None caso o time não exista
+
+    # Obtém os registros de emoção dos membros do time
+    member_ids = [user.id for user in team.members]
+    emotions_records: list[EmotionRecordInTeam] = get_emotion_records_by_user_id(db, member_ids)
+
+    # Evita o erro de índice verificando o tamanho das listas antes de atribuir
+    for i in range(min(len(emotions_records), len(team.members))):
         emotions_records[i].user_name = team.members[i].name
 
+    # Retorna os dados do time corretamente
     team_data = {
         "team_data": team,
         "members": team.members,
         "emotions_reports": emotions_records
     }
-    
+
     return team_data
 
 
