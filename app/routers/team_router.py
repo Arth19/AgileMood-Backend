@@ -53,8 +53,10 @@ def get_team_by_id(
     """
     logger.debug(f"Call to get the Team with ID: {team_id}")
     emotions = emotion_crud.get_emotions_by_team(db, team_id)
+
     team = team_crud.get_team_by_id(db, team_id)
     team["emotions"] = emotions
+
     if team is None:
         logger.error(f"Team with ID {team_id} not found.")
         raise Errors.NOT_FOUND
@@ -149,7 +151,7 @@ def add_team_member(
         logger.error("User doesn't have the permission to add new members to a team.")
         raise Errors.NO_PERMISSION
     
-    # Busca o user_id usando o user_email
+    # Search the user by the email
     user = user_crud.get_user_by_email(db, user_email)
     if user is None:
         logger.error("User not found with the provided email.")

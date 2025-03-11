@@ -55,13 +55,7 @@ def get_emotion_id_by_name(db: Session, emotion_name: str):
 
 
 def get_all_emotions(db: Session, user_id: int):
-    managed_teams = db.query(Team).filter(Team.manager_id == user_id).all()
-    if not managed_teams:
-        logger.error(f"User with ID {user_id} isn't a manager of any existing team.")
-        return None
-
-    team_ids = [team.id for team in managed_teams]
-    return db.query(Emotion).filter(Emotion.team_id.in_(team_ids)).all()
+    return db.query(Emotion).all()
 
 
 def update_emotion(db: Session, emotion_id: int, emotion_update: dict, user_id: int):
