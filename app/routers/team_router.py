@@ -182,7 +182,7 @@ def remove_team_member(
         raise Errors.NO_PERMISSION
     
     result = team_crud.remove_team_member(db, team_id, user_id)
-    if result is not None:
+    if result is None:
         raise Errors.INVALID_PARAMS
 
     return Messages.MEMBER_REMOVED_FROM_TEAM
