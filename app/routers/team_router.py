@@ -164,12 +164,12 @@ def add_team_member(
     return Messages.MEMBER_ADDED_TO_TEAM
 
 
-@router.delete("/{team_id}/{user_id}")
+@router.delete("/{team_id}/member")
 def remove_team_member(
         team_id: int,
-        user_id: int,
         current_user: Annotated[UserInDB, Depends(get_current_active_user)],
         db: Session = Depends(get_db),
+        user_email: str = Query(..., description="Email do usuário a ser removido"),
 ):
     """
     Remove a member from a team.
@@ -180,8 +180,9 @@ def remove_team_member(
     if current_user.role != Role.MANAGER:
         logger.error(f"User doesn't have the permission to remove members from teams.")
         raise Errors.NO_PERMISSION
-    
-    result = team_crud.remove_team_member(db, team_id, user_id)
+
+    user = user_crud.get_user_by_email(db, user_email)
+    result = team_crud.remove_team_member(db, team_id, user.id)
     if result is None:
         raise Errors.INVALID_PARAMS
 
