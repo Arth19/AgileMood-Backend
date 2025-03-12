@@ -20,6 +20,7 @@ class Messages:
     USER_DELETE = {"message": "Used deleted"}
     EMOTION_DELETE = {"message": "Emotion deleted"}
     MEMBER_ADDED_TO_TEAM = {"message": "Member added successfully!"}
+    MEMBER_REMOVED_FROM_TEAM = {"message": "Member removed successfully!"}
 
 
 class DataBase:

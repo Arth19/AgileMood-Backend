@@ -125,6 +125,7 @@ def add_team_member(db: Session, team_id: int, user_id: int):
 
 def remove_team_member(db: Session, team_id: int, user_id: int):
     if not _validate_team_and_user_existence(db, team_id, user_id):
+        logger.error(f"Team with ID:= {team_id} doesn't exist")
         return None
 
     existing_user_team = db.query(user_teams).filter_by(user_id=user_id, team_id=team_id).first()

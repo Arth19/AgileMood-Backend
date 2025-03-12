@@ -164,7 +164,7 @@ def add_team_member(
     return Messages.MEMBER_ADDED_TO_TEAM
 
 
-@router.delete("/{team_id}/{user_id}", response_model=TeamResponse)
+@router.delete("/{team_id}/{user_id}")
 def remove_team_member(
         team_id: int,
         user_id: int,
@@ -181,11 +181,11 @@ def remove_team_member(
         logger.error(f"User doesn't have the permission to remove members from teams.")
         raise Errors.NO_PERMISSION
     
-    db_team = team_crud.remove_team_member(db, team_id, user_id)
-    if db_team is None:
+    result = team_crud.remove_team_member(db, team_id, user_id)
+    if result is not None:
         raise Errors.INVALID_PARAMS
 
-    return db_team
+    return Messages.MEMBER_REMOVED_FROM_TEAM
 
 
 @router.get("/{team_id}/emotions", response_model=AllEmotionsResponse)
