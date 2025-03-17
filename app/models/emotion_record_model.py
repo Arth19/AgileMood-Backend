@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
-from typing import List
+from typing import List, Optional
 from enum import Enum
 
 
@@ -23,9 +23,23 @@ class EmotionRecord(BaseModel):
         from_attributes = True
 
 
+class FeedbackSummary(BaseModel):
+    id: int
+    message: str
+    is_anonymous: bool
+    created_at: datetime
+    emotion_record_id: int
+    
+    class Config:
+        from_attributes = True
+
+
 class EmotionRecordInDb(EmotionRecord):
+    # O ID é essencial para identificar unicamente cada registro de emoção
+    # e permitir operações como envio de feedback e filtragem por data
     id:  int | None = None
     created_at: datetime = Field(default_factory=datetime.now)
+    feedbacks: List[FeedbackSummary] = []
 
 
 class AllEmotionReportsResponse(BaseModel):
@@ -33,4 +47,8 @@ class AllEmotionReportsResponse(BaseModel):
 
 
 class EmotionRecordInTeam(EmotionRecord):
-    user_name:  str | None = None
+    # O ID é essencial para identificar unicamente cada registro de emoção
+    # e permitir operações como envio de feedback e filtragem por data
+    id: int | None = None
+    user_name: str | None = None
+    created_at: datetime = Field(default_factory=datetime.now)

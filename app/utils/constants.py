@@ -21,14 +21,16 @@ class Messages:
     EMOTION_DELETE = {"message": "Emotion deleted"}
     MEMBER_ADDED_TO_TEAM = {"message": "Member added successfully!"}
     MEMBER_REMOVED_FROM_TEAM = {"message": "Member removed successfully!"}
+    FEEDBACK_SENT = {"message": "Feedback sent successfully!"}
 
 
 class DataBase:
     DATABASE_URL = "sqlite:///./ma.db"
-    EMOTION_RECORDS_TABLE_NAME = "emotion_records"
+    EMOTION_RECORDS_TABLE_NAME = "emotion_record"
     EMOTION_TABLE_NAME = "emotion"
     USER_TABLE_NAME = "user"
     TEAM_TABLE_NAME = "team"
+    FEEDBACK_TABLE_NAME = "feedback"
 
 
 class Role:
