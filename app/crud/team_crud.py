@@ -38,7 +38,7 @@ def get_team_by_id(db: Session, team_id: int):
 
     # Obtém os registros de emoção dos membros do time
     member_ids = [user.id for user in team.members]
-    emotions_records: list[EmotionRecordInTeam] = get_emotion_records_by_user_id(db, member_ids)
+    emotions_records: list[EmotionRecordInTeam] = get_emotion_records_by_user_id(db, member_ids, for_team=True)
 
     # Evita o erro de índice verificando o tamanho das listas antes de atribuir
     for i in range(min(len(emotions_records), len(team.members))):
