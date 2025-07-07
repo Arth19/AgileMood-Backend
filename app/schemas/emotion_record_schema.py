@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 import datetime
-import app.databases.sqlite_database as db
+import app.databases.postgres_database as db
 
 from app.utils.constants import DataBase
 

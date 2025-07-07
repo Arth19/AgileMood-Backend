@@ -14,7 +14,7 @@ from app.models.user_model import UserCreate, UserInDB, UserInTeam
 from app.models.token_model import Token
 
 from app.crud import user_crud
-from app.databases.sqlite_database import get_db
+from app.databases.postgres_database import get_db
 from app.utils.constants import Errors, Messages
 from app.utils.logger import logger
 

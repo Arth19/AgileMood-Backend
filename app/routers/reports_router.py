@@ -7,7 +7,7 @@ from app.crud import reports_crud
 
 from app.models.user_model import UserInDB
 import app.models.reports_model as reports_model
-from app.databases.sqlite_database import get_db
+from app.databases.postgres_database import get_db
 
 from app.routers.authentication import get_current_active_user
 from app.utils.constants import Errors, Role

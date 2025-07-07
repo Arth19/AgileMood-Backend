@@ -12,7 +12,7 @@ from app.crud import user_crud
 from app.models.user_model import UserInDB
 from app.models.token_model import TokenData
 
-from app.databases.sqlite_database import get_db
+from app.databases.postgres_database import get_db
 from app.utils.constants import Errors, SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
 from app.utils.logger import logger
 

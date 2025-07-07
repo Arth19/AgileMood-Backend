@@ -9,7 +9,7 @@ from app.models.emotion_record_model import AllEmotionReportsResponse
 
 from app.models.user_model import UserInDB
 
-from app.databases.sqlite_database import get_db
+from app.databases.postgres_database import get_db
 
 from app.utils.constants import Errors, Role, Messages
 from app.utils.logger import logger

@@ -4,7 +4,7 @@ from app.main import app
 from app.models.user_model import UserCreate, UserInDB, UserInTeam
 from app.models.token_model import Token
 from app.utils.constants import Errors, Messages, Role
-from app.databases.sqlite_database import get_db
+from app.databases.postgres_database import get_db
 from app.routers.authentication import create_access_token 
 from sqlalchemy.orm import Session
 

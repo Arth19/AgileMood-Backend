@@ -5,7 +5,7 @@ from typing import Annotated
 from app.models.team_model import Team, TeamResponse, AllTeamsResponse, TeamData
 from app.models.user_model import UserInDB
 from app.models.emotion_model import AllEmotionsResponse
-from app.databases.sqlite_database import get_db
+from app.databases.postgres_database import get_db
 from app.utils.constants import Errors, Role, Messages
 from app.utils.logger import logger
 from app.crud import team_crud

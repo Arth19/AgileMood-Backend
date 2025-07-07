@@ -2,13 +2,16 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware  # 🚀 Importação do CORS
 
 from app.schemas.user_schema import db
-from app.databases.sqlite_database import engine
+from app.databases.postgres_database import Base, engine, get_db
 from app.routers.user_router import router as user_router
 from app.routers.emotion_router import router as emotion_router
 from app.routers.emotion_record_router import router as emotion_record_router
 from app.routers.team_router import router as team_router
 from app.routers.reports_router import router as reports_router
 from app.routers.feedback_router import router as feedback_router
+from dotenv import load_dotenv
+
+load_dotenv()  # Carrega as variáveis do arquivo .env
 
 db.Base.metadata.create_all(bind=engine)
 

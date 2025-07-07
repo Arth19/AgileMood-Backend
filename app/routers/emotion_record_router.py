@@ -11,7 +11,7 @@ from app.models.user_model import UserInDB
 
 from app.routers.authentication import get_current_active_user
 
-from app.databases.sqlite_database import get_db
+from app.databases.postgres_database import get_db
 
 from app.utils.constants import Errors, Role
 from app.utils.logger import logger
