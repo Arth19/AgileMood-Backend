@@ -54,7 +54,7 @@ def get_team_by_id(db: Session, team_id: int):
     return team_data
 
 
-def get_all_teams(db: Session, manager_id: int):
+def get_teams_by_manager(db: Session, manager_id: int):
     """
     Return all created teams in the database
     """
