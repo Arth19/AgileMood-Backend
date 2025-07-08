@@ -19,9 +19,9 @@ app = FastAPI()
 
 origins = [
     "http://localhost:3000",  # Para desenvolvimento local
-    "https://agilemood-frontend.vercel.app",  # Domínio principal do Vercel
-    "https://agilemood-frontend-arth19.vercel.app",  # Seu subdomínio no Vercel
-    "https://agilemood-frontend-git-main-arth19.vercel.app"  # URL de preview
+    "https://agile-mood-frontend.vercel.app",  # Domínio principal do Vercel
+    "https://agile-mood-frontend-arth19.vercel.app",  # Seu subdomínio no Vercel
+    "https://agile-mood-frontend-git-main-arth19.vercel.app"  # URL de preview
 ]
 
 # 🚨 Configuração do CORS para permitir acesso do frontend (localhost:3000)
