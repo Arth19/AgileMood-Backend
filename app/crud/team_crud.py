@@ -54,18 +54,18 @@ def get_team_by_id(db: Session, team_id: int):
     return team_data
 
 
-def get_all_teams(db: Session):
+def get_all_teams(db: Session, manager_id: int):
     """
     Return all created teams in the database
     """
 
-    all_teams = db.query(Team).all()
-    result = []
+    return db.query(Team).filter(Team.manager_id == manager_id).all()
+    # result = []
 
-    for team in all_teams:
-        result.append(db.query(Team).filter(Team.id.is_(team.id)).first())
+    # for team in all_teams:
+    #     result.append(db.query(Team).filter(Team.id.is_(team.id)).first())
         
-    return result
+    # return result
 
 
 def update_team(db: Session, team_id: int, team_update: TeamModel):

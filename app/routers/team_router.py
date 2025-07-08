@@ -69,18 +69,11 @@ def get_all_teams(
         current_user: Annotated[UserInDB, Depends(get_current_active_user)],
         db: Session = Depends(get_db),
 ):
-    """
-    Returns all the created Teams.
-    """
-    logger.debug("Call to list all created Teams.")
-
+    logger.debug("Listing Teams for manager %s", current_user.id)
     if current_user.role != Role.MANAGER:
         raise Errors.NO_PERMISSION
 
-    teams = team_crud.get_all_teams(db)
-    if not teams:
-        logger.error("There no teams in our database.")
-
+    teams = team_crud.get_teams_by_manager(db, current_user.id)
     return AllTeamsResponse(teams=teams)
 
 
