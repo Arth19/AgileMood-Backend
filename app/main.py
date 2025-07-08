@@ -34,7 +34,6 @@ app = FastAPI()
 #     allow_methods=["*"],  # ✅ Permite todos os métodos (GET, POST, etc)
 #     allow_headers=["*"],  # ✅ Permite todos os headers (incluindo Authorization)
 # )
-from fastapi.middleware.cors import CORSMiddleware
 
 app.add_middleware(
     CORSMiddleware,
