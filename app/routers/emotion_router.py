@@ -17,7 +17,7 @@ from app.utils.logger import logger
 from app.routers.authentication import get_current_active_user
 
 router = APIRouter(
-    prefix="/emotion",
+    prefix="/emotions",
     tags=["emotions"],
 )
 
