@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import Annotated
 
+from app.core.auth_utils import ensure_is_team_manager
 from app.models.team_model import Team, TeamResponse, AllTeamsResponse, TeamData
 from app.models.user_model import UserInDB
 from app.models.emotion_model import AllEmotionsResponse
@@ -44,22 +45,18 @@ def create_team(
 
 @router.get("/{team_id}", response_model=TeamResponse)
 def get_team_by_id(
-        team_id: int,
-        current_user: Annotated[UserInDB, Depends(get_current_active_user)],
-        db: Session = Depends(get_db),
+    team_id: int,
+    current_user: Annotated[UserInDB, Depends(get_current_active_user)],
+    db: Session = Depends(get_db),
 ):
-    """
-    Returns a Team by its ID.
-    """
-    logger.debug(f"Call to get the Team with ID: {team_id}")
-    emotions = emotion_crud.get_emotions_by_team(db, team_id)
-
     team = team_crud.get_team_by_id(db, team_id)
-    team["emotions"] = emotions
-
-    if team is None:
-        logger.error(f"Team with ID {team_id} not found.")
+    if not team:
         raise Errors.NOT_FOUND
+
+    ensure_is_team_manager(team, current_user)
+
+    emotions = emotion_crud.get_emotions_by_team(db, team_id)
+    team["emotions"] = emotions
 
     return team
 
@@ -79,53 +76,34 @@ def get_all_teams(
 
 @router.put("/{team_id}", response_model=TeamResponse)
 def update_team(
-        team_id: int,
-        team_update: Team,
-        current_user: Annotated[UserInDB, Depends(get_current_active_user)],
-        db: Session = Depends(get_db),
+    team_id: int,
+    team_update: Team,
+    current_user: Annotated[UserInDB, Depends(get_current_active_user)],
+    db: Session = Depends(get_db),
 ):
-    """
-    Updates one existing team.
-    Only users with the 'manager' role can update teams.
-    """
-    logger.debug(f"Call to update the Team with ID: {team_id}")
-
-    if current_user.role != Role.MANAGER:
-        logger.error(f"User doesn't have the permission to update teams.")
-        raise Errors.NO_PERMISSION
-
-    team_update.manager_id = current_user.id
-    db_team = team_crud.update_team(db, team_id, team_update)
-    if db_team is None:
-        logger.error(f"Failed to update team with ID: {team_id}")
+    team = team_crud.get_team_by_id(db, team_id)
+    if not team:
         raise Errors.NOT_FOUND
 
-    return db_team
+    ensure_is_team_manager(team, current_user)
 
+    team_update.manager_id = current_user.id
+    return team_crud.update_team(db, team_id, team_update)
 
 @router.delete("/{team_id}")
 def delete_team(
-        team_id: int,
-        current_user: Annotated[UserInDB, Depends(get_current_active_user)],
-        db: Session = Depends(get_db),
+    team_id: int,
+    current_user: Annotated[UserInDB, Depends(get_current_active_user)],
+    db: Session = Depends(get_db),
 ):
-    """
-    Deletes a team by ID.
-    Only users with the 'manager' role can delete teams.
-    """
-    logger.debug(f"Call to delete the Team with ID: {team_id}")
-
-    if current_user.role != Role.MANAGER:
-        logger.error(f"User doesn't have the permission to delete teams.")
-        raise Errors.NO_PERMISSION
-
-    success = team_crud.delete_team(db, team_id)
-    if not success:
-        logger.error(f"Team with ID {team_id} not found.")
+    team = team_crud.get_team_by_id(db, team_id)
+    if not team:
         raise Errors.NOT_FOUND
 
-    return {"message": f"Team with ID {team_id} successfully deleted."}
+    ensure_is_team_manager(team, current_user)
 
+    team_crud.delete_team(db, team_id)
+    return {"message": f"Team {team_id} deleted."}
 
 @router.post("/{team_id}")
 def add_team_member(
@@ -134,26 +112,17 @@ def add_team_member(
         db: Session = Depends(get_db),
         user_email: str = Query(..., description="Email do usuário a ser adicionado"),
 ):
-    """
-    Adds a new member to a team.
-    Only users with the 'manager' role can add a new member to a team.
-    """
-    logger.debug("Call to add a new member to a team.")
+    team = team_crud.get_team_by_id(db, team_id)
+    if not team:
+        raise Errors.NOT_FOUND
 
-    if current_user.role != Role.MANAGER:
-        logger.error("User doesn't have the permission to add new members to a team.")
-        raise Errors.NO_PERMISSION
-    
-    # Search the user by the email
+    ensure_is_team_manager(team, current_user)
+
     user = user_crud.get_user_by_email(db, user_email)
-    if user is None:
-        logger.error("User not found with the provided email.")
-        raise Errors.INVALID_PARAMS
-    
-    db_team = team_crud.add_team_member(db, team_id, user.id)
-    if db_team is None:
+    if not user:
         raise Errors.INVALID_PARAMS
 
+    team_crud.add_team_member(db, team_id, user.id)
     return Messages.MEMBER_ADDED_TO_TEAM
 
 
@@ -164,40 +133,31 @@ def remove_team_member(
         db: Session = Depends(get_db),
         user_email: str = Query(..., description="Email do usuário a ser removido"),
 ):
-    """
-    Remove a member from a team.
-    Only users with the 'manager' role can remove members from teams.
-    """
-    logger.debug("Call to remove a member from a team.")
+    team = team_crud.get_team_by_id(db, team_id)
+    if not team:
+        raise Errors.NOT_FOUND
 
-    if current_user.role != Role.MANAGER:
-        logger.error(f"User doesn't have the permission to remove members from teams.")
-        raise Errors.NO_PERMISSION
+    ensure_is_team_manager(team, current_user)
 
     user = user_crud.get_user_by_email(db, user_email)
-    result = team_crud.remove_team_member(db, team_id, user.id)
-    if result is None:
+    if not user:
         raise Errors.INVALID_PARAMS
 
-    return Messages.MEMBER_REMOVED_FROM_TEAM
+    team_crud.remove_team_member(db, team_id, user.id)
+    return Messages.MEMBER_ADDED_TO_TEAM
 
 
 @router.get("/{team_id}/emotions", response_model=AllEmotionsResponse)
 def get_emotions_by_team(
-        team_id: int,
-        current_user: Annotated[UserInDB, Depends(get_current_active_user)],
-        db: Session = Depends(get_db),
+    team_id: int,
+    current_user: Annotated[UserInDB, Depends(get_current_active_user)],
+    db: Session = Depends(get_db),
 ):
-    """
-    Returns all Emotions from a Team, if the user is the Team's manager.
-    """
-    logger.debug(f"Call to list all Emotions from the Team with ID: {team_id}")
+    team = team_crud.get_team_by_id(db, team_id)
+    if not team:
+        raise Errors.NOT_FOUND
 
-    # if current_user.role != Role.MANAGER:
-    #     raise Errors.NO_PERMISSION
+    ensure_is_team_manager(team, current_user)      # ⬅️ novo
 
     emotions = emotion_crud.get_emotions_by_team(db, team_id)
-    if emotions is None:
-        raise Errors.NO_PERMISSION
-
     return AllEmotionsResponse(emotions=emotions)
