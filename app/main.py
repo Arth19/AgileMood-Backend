@@ -17,26 +17,9 @@ db.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# origins = [
-#     "http://localhost:3000",  # Para desenvolvimento local
-#     "https://agile-mood-frontend.vercel.app",  # Domínio principal do Vercel
-#     "https://agile-mood-frontend-arth19.vercel.app",  # Seu subdomínio no Vercel
-#     "https://agile-mood-frontend-git-main-arth19.vercel.app"  # URL de preview
-#     "https://agile-mood-front-end.vercel.app"
-#     "https://agile-mood.vercel.app"
-# ]
-
-# 🚨 Configuração do CORS para permitir acesso do frontend (localhost:3000)
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=origins,  # ✅ Permitir acesso apenas do Next.js
-#     allow_credentials=True,
-#     allow_methods=["*"],  # ✅ Permite todos os métodos (GET, POST, etc)
-#     allow_headers=["*"],  # ✅ Permite todos os headers (incluindo Authorization)
-# )
-
 app.add_middleware(
     CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Permite acesso do frontend local
     allow_origin_regex="https://.*\\.vercel\\.app$",
     allow_credentials=True,
     allow_methods=["*"],
