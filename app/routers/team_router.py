@@ -1,8 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from typing import Annotated
-
-from app.core.auth_utils import ensure_is_team_manager
+from app.core.auth_utils import ensure_is_team_manager, ensure_is_team_member_or_manager
 from app.models.team_model import Team, TeamResponse, AllTeamsResponse, TeamData
 from app.models.user_model import UserInDB
 from app.models.emotion_model import AllEmotionsResponse
@@ -53,7 +52,7 @@ def get_team_by_id(
     if not team:
         raise Errors.NOT_FOUND
 
-    ensure_is_team_manager(team, current_user)
+    ensure_is_team_member_or_manager(team, current_user)
 
     emotions = emotion_crud.get_emotions_by_team(db, team_id)
     team["emotions"] = emotions
@@ -157,7 +156,7 @@ def get_emotions_by_team(
     if not team:
         raise Errors.NOT_FOUND
 
-    ensure_is_team_manager(team, current_user)      # ⬅️ novo
+    ensure_is_team_member_or_manager(team, current_user)
 
     emotions = emotion_crud.get_emotions_by_team(db, team_id)
     return AllEmotionsResponse(emotions=emotions)
