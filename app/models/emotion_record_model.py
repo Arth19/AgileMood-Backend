@@ -3,6 +3,7 @@ from datetime import datetime
 from typing import List, Optional
 from enum import Enum
 
+from app.models.emotion_model import EmotionInDb
 
 class IntensityEnum(int, Enum):
     ONE = 1
@@ -40,6 +41,11 @@ class EmotionRecordInDb(EmotionRecord):
     id:  int | None = None
     created_at: datetime = Field(default_factory=datetime.now)
     feedbacks: List[FeedbackSummary] = []
+
+
+class EmotionRecordWithEmotion(EmotionRecordInDb):
+    """Emotion record with the associated Emotion data."""
+    emotion: EmotionInDb
 
 
 class AllEmotionReportsResponse(BaseModel):

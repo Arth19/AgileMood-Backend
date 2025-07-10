@@ -1,9 +1,14 @@
 from fastapi.testclient import TestClient
 from unittest.mock import patch
+from datetime import datetime
 
 from app.main import app
 from app.models.user_model import UserInDB
-from app.models.emotion_record_model import EmotionRecordInDb, IntensityEnum
+from app.models.emotion_record_model import (
+    EmotionRecordWithEmotion,
+    IntensityEnum,
+)
+from app.models.emotion_model import EmotionInDb
 from app.utils.constants import Role
 from app.routers.authentication import create_access_token
 
@@ -18,13 +23,16 @@ logged_user = UserInDB(
     hashed_password="x",
 )
 
-mock_record = EmotionRecordInDb(
+mock_record = EmotionRecordWithEmotion(
     id=1,
     user_id=1,
     emotion_id=2,
     intensity=IntensityEnum.THREE,
     notes="ok",
     is_anonymous=False,
+    created_at=datetime.now(),
+    feedbacks=[],
+    emotion=EmotionInDb(id=2, name="Happy", emoji="😀", color=None, team_id=None, is_negative=False),
 )
 
 
@@ -39,6 +47,9 @@ def test_get_emotion_record_by_id():
         )
         assert response.status_code == 200
         assert response.json()["id"] == 1
+        body = response.json()
+        assert body["id"] == 1
+        assert body["emotion"]["name"] == "Happy"
 
 
 def test_get_emotion_record_by_id_not_found():

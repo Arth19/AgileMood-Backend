@@ -1,7 +1,12 @@
 from sqlalchemy.orm import Session
 
-from app.models.emotion_record_model import EmotionRecord as EmotionRecordModel
-from app.models.emotion_record_model import EmotionRecordInDb, EmotionRecordInTeam
+from app.models.emotion_record_model import (
+    EmotionRecord as EmotionRecordModel,
+    EmotionRecordInDb,
+    EmotionRecordInTeam,
+    EmotionRecordWithEmotion,
+)
+from app.models.emotion_model import EmotionInDb
 from app.schemas.emotion_record_schema import EmotionRecord as EmotionRecordSchema
 
 from app.utils.logger import logger
@@ -147,7 +152,7 @@ def get_emotion_record_by_id(db: Session, record_id: int):
         logger.error(f"Emotion record with ID {record_id} not found.")
         return None
 
-    record = EmotionRecordInDb(
+    record = EmotionRecordWithEmotion(
         id=db_record.id,
         user_id=None if db_record.is_anonymous else db_record.user_id,
         emotion_id=db_record.emotion_id,
@@ -156,5 +161,6 @@ def get_emotion_record_by_id(db: Session, record_id: int):
         is_anonymous=db_record.is_anonymous,
         created_at=db_record.created_at,
         feedbacks=[],
+        emotion=EmotionInDb.model_validate(db_record.emotion),
     )
     return record

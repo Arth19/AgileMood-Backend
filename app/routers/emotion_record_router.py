@@ -9,6 +9,7 @@ from app.models.emotion_record_model import (
     EmotionRecordInDb,
     EmotionRecord,
     AllEmotionReportsResponse,
+    EmotionRecordWithEmotion,
 )
 
 from app.models.user_model import UserInDB
@@ -81,14 +82,23 @@ def get_emotion_report_for_logged_user_by_emotion_name(
     return AllEmotionReportsResponse(emotion_records=response)
 
 
-@router.get("/id/{record_id}", response_model=EmotionRecordInDb)
+@router.get("/id/{record_id}", response_model=EmotionRecordWithEmotion)
 def get_emotion_record_by_id(
     record_id: int,
     current_user: Annotated[UserInDB, Depends(get_current_active_user)],
     db: Session = Depends(get_db),
 ):
     logger.debug("call to get emotion record by id")
-    record = emotion_record_crud.get_emotion_record_by_id(db, record_id)
-    if record is None or record.user_id != current_user.id:
+
+    from app.schemas.emotion_record_schema import EmotionRecord as EmotionRecordSchema
+
+    db_record = (
+        db.query(EmotionRecordSchema)
+        .filter(EmotionRecordSchema.id == record_id)
+        .first()
+    )
+    if db_record is None or db_record.user_id != current_user.id:
         raise Errors.NOT_FOUND
+
+    record = emotion_record_crud.get_emotion_record_by_id(db, record_id)
     return record
