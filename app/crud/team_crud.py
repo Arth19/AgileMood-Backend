@@ -56,7 +56,8 @@ def get_team_by_id(db: Session, team_id: int):
     team_data = {
         "team_data": team,
         "members": team.members,
-        "emotions_reports": emotions_records
+        "emotions_reports": emotions_records,
+        "manager": team.manager  # Adiciona o manager real do time
     }
 
     return team_data

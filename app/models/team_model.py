@@ -27,6 +27,7 @@ class TeamResponse(BaseModel):
     members: List[UserInTeam]
     emotions_reports: List[EmotionRecordInTeam]
     emotions: List[EmotionInDb]
+    manager: UserInTeam  # Adiciona o manager real do time
 
 
 class AllTeamsResponse(BaseModel):
