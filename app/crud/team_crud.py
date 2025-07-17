@@ -38,7 +38,9 @@ def get_team_by_id(db: Session, team_id: int):
 
     # Obtém os registros de emoção dos membros do time
     member_ids = [user.id for user in team.members]
-    emotions_records: list[EmotionRecordInTeam] = get_emotion_records_by_user_id(db, member_ids, for_team=True)
+    emotions_records: list[EmotionRecordInTeam] = get_emotion_records_by_user_id(
+        db, member_ids, for_team=True, team_id=team_id
+    )
 
     # Cria um dicionário para mapear user_id -> user_name
     user_name_map = {user.id: user.name for user in team.members}
