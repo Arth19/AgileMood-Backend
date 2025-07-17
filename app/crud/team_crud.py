@@ -40,9 +40,17 @@ def get_team_by_id(db: Session, team_id: int):
     member_ids = [user.id for user in team.members]
     emotions_records: list[EmotionRecordInTeam] = get_emotion_records_by_user_id(db, member_ids, for_team=True)
 
-    # Evita o erro de índice verificando o tamanho das listas antes de atribuir
-    for i in range(min(len(emotions_records), len(team.members))):
-        emotions_records[i].user_name = team.members[i].name
+    # Cria um dicionário para mapear user_id -> user_name
+    user_name_map = {user.id: user.name for user in team.members}
+    
+    # Atribui o user_name correto baseado no user_id, respeitando o anonimato
+    for record in emotions_records:
+        if record.is_anonymous:
+            record.user_name = None  # Registros anônimos não devem mostrar o nome
+        elif record.user_id and record.user_id in user_name_map:
+            record.user_name = user_name_map[record.user_id]
+        else:
+            record.user_name = None  # Fallback para casos onde o user_id não é encontrado
 
     # Retorna os dados do time corretamente
     team_data = {
